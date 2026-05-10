@@ -1,0 +1,9 @@
+requests
+python-dotenv
+pandas
+openpyxl
+flask
+google-genai
+openai
+plotly
+rich

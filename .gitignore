@@ -1,0 +1,26 @@
+# Generated outputs & reports (not versioned)
+output/
+
+# Secrets & local OAuth / mapping cache
+.env
+xero_token.json
+mapping_memory.json
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Optional: local invoice PDFs (keep repo code-only)
+invoices/

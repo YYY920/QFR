@@ -1,0 +1,105 @@
+{
+  "version": "qfr_demo_v1",
+  "categories": [
+    {
+      "name": "Sales",
+      "type": "income",
+      "description": "Revenue from core sales or services."
+    },
+    {
+      "name": "Purchases",
+      "type": "cogs",
+      "description": "Cost of sales or direct purchases tied to revenue."
+    },
+    {
+      "name": "Interest Income",
+      "type": "other_income",
+      "description": "Bank interest or investment interest income."
+    },
+    {
+      "name": "Advertising",
+      "type": "expense",
+      "description": "Marketing, advertising, and promotional spend."
+    },
+    {
+      "name": "Bank Fees",
+      "type": "expense",
+      "description": "Bank charges, merchant fees, and transaction fees."
+    },
+    {
+      "name": "Cleaning",
+      "type": "expense",
+      "description": "Cleaning services and related supplies."
+    },
+    {
+      "name": "Consulting & Accounting",
+      "type": "expense",
+      "description": "Professional consulting and accounting services."
+    },
+    {
+      "name": "Entertainment",
+      "type": "expense",
+      "description": "Client entertainment and hospitality."
+    },
+    {
+      "name": "Freight & Courier",
+      "type": "expense",
+      "description": "Shipping, freight, and courier costs."
+    },
+    {
+      "name": "General Expenses",
+      "type": "expense",
+      "description": "General operational expenses not classified elsewhere."
+    },
+    {
+      "name": "Legal expenses",
+      "type": "expense",
+      "description": "Legal fees and related costs."
+    },
+    {
+      "name": "Light, Power, Heating",
+      "type": "expense",
+      "description": "Utilities such as electricity, power, or heating."
+    },
+    {
+      "name": "Motor Vehicle Expenses",
+      "type": "expense",
+      "description": "Vehicle running costs, fuel, and maintenance."
+    },
+    {
+      "name": "Office Expenses",
+      "type": "expense",
+      "description": "Office supplies and day-to-day office costs."
+    },
+    {
+      "name": "Printing & Stationery",
+      "type": "expense",
+      "description": "Printing, stationery, and related office consumables."
+    },
+    {
+      "name": "Rent",
+      "type": "expense",
+      "description": "Office or facility rental costs."
+    },
+    {
+      "name": "Subscriptions",
+      "type": "expense",
+      "description": "Software or service subscriptions."
+    },
+    {
+      "name": "Telephone & Internet",
+      "type": "expense",
+      "description": "Phone, internet, and communications costs."
+    },
+    {
+      "name": "Travel - National",
+      "type": "expense",
+      "description": "Domestic travel expenses."
+    },
+    {
+      "name": "Wages and Salaries",
+      "type": "expense",
+      "description": "Employee wages and salaries (payroll)."
+    }
+  ]
+}
