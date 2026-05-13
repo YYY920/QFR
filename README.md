@@ -4,28 +4,25 @@ Python MVP to connect to your **Xero Demo Company**, read the **Profit & Loss** 
 
 ### 1. Setup
 
-1. Create and activate a virtualenv (optional but recommended).
+1. Create and activate a virtualenv using **Python 3.10+**
+
+```bash
+python3.11 -m venv venv
+source venv/bin/activate
+```
 2. Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Create a `.env` file in the project root and fill in your keys:
-
-Example:
+3. Copy `.env.example` to `.env` and fill in your keys:
 
 ```bash
-cat > .env << 'EOF'
-XERO_CLIENT_ID=your_xero_client_id
-XERO_CLIENT_SECRET=your_xero_client_secret
-XERO_REDIRECT_URI=http://localhost:51789/callback
-XERO_TENANT_ID=
-GEMINI_API_KEY=your_gemini_key
-EOF
+cp .env.example .env
 ```
 
-You must create a Xero OAuth2 app and a Google Gemini API key.
+Then edit `.env` with your actual credentials. You must create a Xero OAuth2 app and a Google Gemini API key.
 
 ### 2. Xero OAuth Login
 
