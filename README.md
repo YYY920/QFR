@@ -50,7 +50,17 @@ Outputs will be written to the `output/` folder:
 - `pl_mapping_report.xlsx` – line-level mapping
 - `pl_mapping_summary.xlsx` – category-level totals
 
-### 4. Notes
+### 4. Run the Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+访问 [http://localhost:3000](http://localhost:3000) 查看前端界面。
+
+### 5. Notes
 
 - This MVP **only** targets your own Demo Company.
 - Mapping is done via **Gemini** few-shot prompting plus a simple local memory cache.
