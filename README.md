@@ -58,7 +58,7 @@ npm install
 npm run dev
 ```
 
-访问 [http://localhost:3000](http://localhost:3000) 查看前端界面。
+Visit frontend [http://localhost:3000](http://localhost:3000) 
 
 ### 5. Notes
 
