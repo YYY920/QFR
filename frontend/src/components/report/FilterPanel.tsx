@@ -83,9 +83,13 @@ export function FilterPanel({ filters, allTypes, allAccounts, onChange, onReset 
   }
 
   function toggleType(type: string) {
-    const next = new Set(filters.selectedTypes)
-    if (next.has(type)) { next.delete(type) } else { next.add(type) }
-    set({ selectedTypes: next })
+    if (filters.selectedTypes.size === 0) {
+      set({ selectedTypes: new Set(allTypes.filter((t) => t !== type)) })
+    } else {
+      const next = new Set(filters.selectedTypes)
+      if (next.has(type)) { next.delete(type) } else { next.add(type) }
+      set({ selectedTypes: next })
+    }
   }
 
   return (

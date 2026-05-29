@@ -65,6 +65,10 @@ describe('getFilteredRows', () => {
     const rows = [row({ Type: 'Bill' }), row({ Type: 'Invoice' })]
     expect(getFilteredRows(rows, { ...defaultFilters, selectedTypes: new Set(['Bill']) })).toHaveLength(1)
   })
+  it('shows all rows when selectedTypes is empty', () => {
+    const rows = [row({ Type: 'Bill' }), row({ Type: 'Invoice' })]
+    expect(getFilteredRows(rows, { ...defaultFilters, selectedTypes: new Set() })).toHaveLength(2)
+  })
   it('filters unmapped only', () => {
     const rows = [row(), row({ MappedCategory: 'Unmapped' })]
     const result = getFilteredRows(rows, { ...defaultFilters, onlyUnmapped: true })
