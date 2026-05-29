@@ -6,6 +6,7 @@ export type FilterState = {
   search: string
   topN: number
   selectedTypes: Set<string>
+  selectedAccounts: Set<string>
   onlyUnmapped: boolean
   onlyLowConf: boolean
 }
@@ -28,6 +29,7 @@ export function getFilteredRows(rows: RawRow[], filters: FilterState): RawRow[] 
       if (row.Date < filters.startDate || row.Date > filters.endDate) return false
     }
     if (filters.selectedTypes.size > 0 && !filters.selectedTypes.has(row.Type)) return false
+    if (filters.selectedAccounts.size > 0 && !filters.selectedAccounts.has(row.AccountName)) return false
     if (filters.onlyUnmapped && row.MappedCategory !== 'Unmapped') return false
     if (filters.onlyLowConf && row.Confidence >= 0.7) return false
     if (filters.search) {

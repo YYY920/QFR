@@ -9,6 +9,7 @@ import { ChartsSection } from '@/components/report/ChartsSection'
 import { DataTables } from '@/components/report/DataTables'
 
 const ALL_TYPES = Array.from(new Set(REPORT_DATA.raw_data.map((r) => r.Type))).sort()
+const ALL_ACCOUNTS = Array.from(new Set(REPORT_DATA.raw_data.map((r) => r.AccountName))).sort()
 
 const DATE_RANGE = REPORT_DATA.raw_data.reduce(
   (acc, r) => ({ min: r.Date < acc.min ? r.Date : acc.min, max: r.Date > acc.max ? r.Date : acc.max }),
@@ -22,6 +23,7 @@ function defaultFilters(): FilterState {
     search: '',
     topN: 8,
     selectedTypes: new Set(),
+    selectedAccounts: new Set(),
     onlyUnmapped: false,
     onlyLowConf: false,
   }
@@ -41,7 +43,7 @@ export default function Home() {
         </p>
       </div>
       <div className="flex flex-col gap-5">
-        <FilterPanel filters={filters} allTypes={ALL_TYPES} onChange={setFilters} onReset={() => setFilters(defaultFilters())} />
+        <FilterPanel filters={filters} allTypes={ALL_TYPES} allAccounts={ALL_ACCOUNTS} onChange={setFilters} onReset={() => setFilters(defaultFilters())} />
         <MetricCards metrics={metrics} />
         <ChartsSection rows={filteredRows} topN={filters.topN} incomeCategories={REPORT_DATA.income_categories} />
         <DataTables rows={filteredRows} balanceSheetData={REPORT_DATA.balance_sheet_data} balanceSheetSummary={REPORT_DATA.balance_sheet_summary} reviewThreshold={REPORT_DATA.review_threshold} />

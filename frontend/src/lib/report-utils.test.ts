@@ -36,6 +36,7 @@ const defaultFilters: FilterState = {
   search: '',
   topN: 8,
   selectedTypes: new Set(),
+  selectedAccounts: new Set(),
   onlyUnmapped: false,
   onlyLowConf: false,
 }
@@ -79,6 +80,25 @@ describe('getFilteredRows', () => {
   it('filters by search text', () => {
     const rows = [row({ Contact: 'Acme Corp' }), row({ Contact: 'Other Co' })]
     expect(getFilteredRows(rows, { ...defaultFilters, search: 'acme' })).toHaveLength(1)
+  })
+  it('returns all rows when selectedAccounts is empty', () => {
+    const rows = [row({ AccountName: 'Office Expenses' }), row({ AccountName: 'Sales' })]
+    expect(getFilteredRows(rows, { ...defaultFilters, selectedAccounts: new Set() })).toHaveLength(2)
+  })
+  it('filters by account name', () => {
+    const rows = [row({ AccountName: 'Office Expenses' }), row({ AccountName: 'Sales' })]
+    const result = getFilteredRows(rows, { ...defaultFilters, selectedAccounts: new Set(['Office Expenses']) })
+    expect(result).toHaveLength(1)
+    expect(result[0].AccountName).toBe('Office Expenses')
+  })
+  it('filters by multiple account names', () => {
+    const rows = [
+      row({ AccountName: 'Office Expenses' }),
+      row({ AccountName: 'Sales' }),
+      row({ AccountName: 'Consulting & Accounting' }),
+    ]
+    const result = getFilteredRows(rows, { ...defaultFilters, selectedAccounts: new Set(['Office Expenses', 'Sales']) })
+    expect(result).toHaveLength(2)
   })
 })
 
