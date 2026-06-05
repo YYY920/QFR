@@ -97,11 +97,11 @@ export function FilterPanel({ filters, allTypes, allAccounts, onChange, onReset 
       <CardContent className="flex flex-wrap items-end gap-4 pt-4">
         <div className="flex flex-col gap-1">
           <Label htmlFor="start-date" className="text-xs text-muted-foreground">Start date</Label>
-          <Input id="start-date" type="date" value={filters.startDate} onChange={(e) => set({ startDate: e.target.value })} className="w-36" />
+          <input id="start-date" type="date" title="Start date" value={filters.startDate} onChange={(e) => set({ startDate: e.target.value })} className="h-8 w-36 rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm outline-none focus-visible:border-ring" />
         </div>
         <div className="flex flex-col gap-1">
           <Label htmlFor="end-date" className="text-xs text-muted-foreground">End date</Label>
-          <Input id="end-date" type="date" value={filters.endDate} onChange={(e) => set({ endDate: e.target.value })} className="w-36" />
+          <input id="end-date" type="date" title="End date" value={filters.endDate} onChange={(e) => set({ endDate: e.target.value })} className="h-8 w-36 rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm outline-none focus-visible:border-ring" />
         </div>
         <div className="flex flex-col gap-1">
           <Label htmlFor="search" className="text-xs text-muted-foreground">Search</Label>

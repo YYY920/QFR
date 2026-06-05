@@ -1,7 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { buildCategoryChartData, buildMonthlyChartData, buildConfidenceHistogram } from '@/lib/report-utils'
 import type { RawRow } from '@/lib/report-data'
@@ -31,6 +31,19 @@ export function ChartsSection({ rows, topN, incomeCategories }: { rows: RawRow[]
   const monthlyData = buildMonthlyChartData(rows, incomeCategories)
   const histData = buildConfidenceHistogram(rows)
 
+  const isSingleCategory = top10Data.length === 1
+  const singleCatMonthly = isSingleCategory
+    ? Array.from(
+        rows.reduce((m, r) => {
+          const month = r.Date.slice(0, 7)
+          m.set(month, (m.get(month) ?? 0) + r.Amount)
+          return m
+        }, new Map<string, number>()),
+      )
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([month, value]) => ({ month, value }))
+    : []
+
   const totalAmt = rows.reduce((s, r) => s + r.Amount, 0)
   const unmappedAmt = rows.filter((r) => r.MappedCategory === 'Unmapped').reduce((s, r) => s + r.Amount, 0)
   const donutData = [
@@ -41,15 +54,25 @@ export function ChartsSection({ rows, topN, incomeCategories }: { rows: RawRow[]
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
 
-      <ChartCard title={`Top ${Math.min(10, topN)} Categories`}>
+      <ChartCard title={isSingleCategory ? `Monthly Trend: ${top10Data[0]?.name}` : `Top ${Math.min(10, topN)} Categories`}>
         <ResponsiveContainer width="100%" height={380}>
-          <BarChart data={top10Data} margin={{ left: 8, right: 8, top: 8, bottom: 60 }}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="name" tick={{ fontSize: 10, angle: -25, textAnchor: 'end' }} />
-            <YAxis tick={{ fontSize: 11 }} />
-            <Tooltip formatter={fmt} />
-            <Bar dataKey="value" fill={C.indigo} radius={[3, 3, 0, 0]} />
-          </BarChart>
+          {isSingleCategory ? (
+            <LineChart data={singleCatMonthly} margin={{ left: 8, right: 8, top: 8, bottom: 30 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="month" tick={{ fontSize: 10, angle: -30, textAnchor: 'end' }} />
+              <YAxis tick={{ fontSize: 11 }} />
+              <Tooltip formatter={fmt} />
+              <Line type="monotone" dataKey="value" stroke={C.indigo} strokeWidth={2} dot={{ r: 4 }} />
+            </LineChart>
+          ) : (
+            <BarChart data={top10Data} margin={{ left: 8, right: 8, top: 8, bottom: 60 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 10, angle: -25, textAnchor: 'end' }} />
+              <YAxis tick={{ fontSize: 11 }} />
+              <Tooltip formatter={fmt} />
+              <Bar dataKey="value" fill={C.indigo} radius={[3, 3, 0, 0]} />
+            </BarChart>
+          )}
         </ResponsiveContainer>
       </ChartCard>
 

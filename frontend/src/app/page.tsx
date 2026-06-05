@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { REPORT_DATA } from '@/lib/report-data'
+import { REPORT_DATA } from '@/lib/report-data-mock'
 import { getFilteredRows, computeMetrics, type FilterState } from '@/lib/report-utils'
 import { FilterPanel } from '@/components/report/FilterPanel'
 import { MetricCards } from '@/components/report/MetricCards'
