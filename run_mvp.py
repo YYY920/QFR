@@ -5,19 +5,28 @@ import os
 import queue
 import re
 import threading
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, TypeVar
 
 import pandas as pd
+import requests
 from config import load_settings
-from xero.oauth import load_token
+from xero.oauth import load_token, refresh_access_token
 from xero.reports import get_balance_sheet, get_profit_and_loss, get_reports, get_report_by_id
-from xero.transactions import get_bills, get_invoices, get_bank_transactions, get_credit_notes
+from xero.transactions import (
+    get_bank_transactions,
+    get_bank_transfers,
+    get_bills,
+    get_credit_notes,
+    get_invoices,
+    get_payments,
+)
 from xero.payroll import get_payruns
 from xero.accounts import get_accounts
 from xero.journals import get_manual_journals
 from xero.general_journals import get_journals
+from xero.finance import get_financial_statement_balance_sheet
 from ai.openai_mapper import map_description
 
 
@@ -87,6 +96,26 @@ def _load_cached_accounts_payload() -> Dict[str, Any]:
     return {"Accounts": rows}
 
 
+def _load_json_cache(filename: str) -> Optional[Dict[str, Any]]:
+    cache_path = OUTPUT_DIR / filename
+    if not cache_path.exists():
+        return None
+    try:
+        payload = json.loads(cache_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        print(f"Ignoring invalid cache file: {cache_path}")
+        return None
+    if not isinstance(payload, dict):
+        print(f"Ignoring non-object cache file: {cache_path}")
+        return None
+    print(f"Using cached {filename}.")
+    return payload
+
+
+def _write_json_cache(filename: str, payload: Dict[str, Any]) -> None:
+    (OUTPUT_DIR / filename).write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run QFR Xero mapping MVP.")
     parser.add_argument("--from-date", dest="from_date", help="YYYY-MM-DD")
@@ -112,6 +141,11 @@ def parse_args() -> argparse.Namespace:
         "--dump-raw",
         action="store_true",
         help="Write raw invoices/bills JSON payloads to output/ for debugging.",
+    )
+    parser.add_argument(
+        "--use-cache",
+        action="store_true",
+        help="Use cached output/raw_*.json payloads for heavy Xero evidence endpoints when available.",
     )
     parser.add_argument(
         "--no-manual-journals",
@@ -157,8 +191,8 @@ def get_report_date_range(args: argparse.Namespace) -> tuple[str, str]:
     if from_date and to_date:
         return from_date, to_date
 
-    # Default to full year 2025 to match available demo data
-    return "2025-01-01", "2025-12-31"
+    # Default to the boss-approved 2026 YTD reporting cut-off.
+    return "2026-01-01", "2026-03-31"
 
 
 _XERO_DATE_RE = re.compile(r"/Date\((\d+)(?:[+-]\d+)?\)/")
@@ -560,6 +594,35 @@ def _parse_amount(value: str) -> float:
         return 0.0
 
 
+def _signed_journal_amount(value: Any) -> float:
+    """Xero journal amounts are already debit-positive / credit-negative."""
+    return _safe_float(value)
+
+
+def _signed_balance_sheet_report_amount(section: str, category: str, amount: float) -> float:
+    """
+    Convert Xero Balance Sheet presentation into the training convention:
+    debit = positive, credit = negative.
+
+    Xero presents liability rows as positive balances in the report, but those
+    balances are normally credit balances. Asset and equity rows already follow
+    the debit/credit sign convention in the raw report payload.
+    """
+    section_lower = str(section or "").lower()
+    if section_lower in {"liabilities", "current liabilities"}:
+        return -amount
+    return amount
+
+
+def _signed_line_item_amount(tx_type: str, amount: float) -> float:
+    tx_type_upper = str(tx_type or "").upper()
+    if tx_type_upper in {"BILL", "BANKTRANSACTION-SPEND"} or tx_type_upper == "CREDITNOTE-ACCRECCREDIT":
+        return abs(amount)
+    if tx_type_upper in {"INVOICE", "BANKTRANSACTION-RECEIVE"} or tx_type_upper == "CREDITNOTE-ACCPAYCREDIT":
+        return -abs(amount)
+    return amount
+
+
 def extract_xero_pl_lines(pl_payload: Dict[str, Any]) -> pd.DataFrame:
     lines: list[dict[str, Any]] = []
 
@@ -586,6 +649,31 @@ def extract_xero_pl_lines(pl_payload: Dict[str, Any]) -> pd.DataFrame:
         walk_rows(reports[0].get("Rows", []))
 
     return pd.DataFrame(lines)
+
+
+def extract_xero_pl_net_profit(pl_payload: Dict[str, Any]) -> float:
+    """Extract Xero P&L net profit/loss using the report's own summary row."""
+
+    def walk_rows(rows: list[dict[str, Any]]) -> Optional[float]:
+        for row in rows:
+            if row.get("RowType") == "Row":
+                cells = row.get("Cells", []) or []
+                if len(cells) >= 2:
+                    label = str(cells[0].get("Value") or "").strip().upper()
+                    if label in {"NET PROFIT", "NET LOSS"}:
+                        return _parse_amount(str(cells[1].get("Value") or ""))
+            if row.get("Rows"):
+                found = walk_rows(row["Rows"])
+                if found is not None:
+                    return found
+        return None
+
+    reports = pl_payload.get("Reports", [])
+    if reports:
+        found = walk_rows(reports[0].get("Rows", []))
+        if found is not None:
+            return found
+    return 0.0
 
 
 def extract_report_lines(report_payload: Dict[str, Any]) -> pd.DataFrame:
@@ -647,15 +735,19 @@ def extract_xero_balance_sheet_lines(balance_sheet_payload: Dict[str, Any]) -> p
                     attrs = _cell_attributes(name_cell)
                     has_account_ref = "account" in attrs or "accountid" in attrs
                     if has_account_ref or name:
-                        total = 0.0
-                        for cell in cells[1:]:
-                            total += _parse_amount(str(cell.get("Value") or ""))
+                        # Xero Balance Sheet can include comparative columns
+                        # (for example 31 Mar 2026 and 31 Mar 2025). The first
+                        # numeric cell is the requested as-at date; later cells
+                        # are comparative periods and must not be summed.
+                        raw_total = _parse_amount(str(cells[1].get("Value") or ""))
                         section = next_path[0] if next_path else ""
+                        category = name or (next_path[-1] if next_path else BALANCE_SHEET_FALLBACK_CATEGORY)
+                        total = _signed_balance_sheet_report_amount(section, category, raw_total)
                         lines.append(
                             {
                                 "BalanceSheetSection": section,
                                 "BalanceSheetSectionPath": " > ".join(next_path),
-                                "BalanceSheetCategory": name or (next_path[-1] if next_path else BALANCE_SHEET_FALLBACK_CATEGORY),
+                                "BalanceSheetCategory": category,
                                 "BalanceSheetAccountName": name,
                                 "AccountID": attrs.get("accountid") or attrs.get("account"),
                                 "AccountCode": attrs.get("accountcode") or attrs.get("code"),
@@ -822,6 +914,11 @@ def _map_balance_sheet_rows(
         account_class = str((account_meta or {}).get("Class") or "").strip().upper()
         if account_class not in BALANCE_SHEET_CLASSES:
             continue
+
+        tx_type = str(row.get("Type") or "").upper()
+        description_lower = str(row.get("Description") or "").lower()
+        if tx_type == "BANKTRANSACTION-SPEND" and account_code == "825" and "less tax" in description_lower:
+            row["Amount"] = -abs(_safe_float(row.get("Amount")))
 
         mapping = by_code.get(account_code) or by_name.get(_account_name_key(account_name))
         if mapping is None:
@@ -1138,6 +1235,17 @@ def _load_env_and_token() -> Dict[str, Any]:
     if not token or "access_token" not in token:
         raise SystemExit("No Xero access token found. Please run login_xero.py first.")
 
+    if token.get("refresh_token") and settings.xero_client_id and settings.xero_client_secret:
+        try:
+            token = refresh_access_token(
+                settings.xero_client_id,
+                settings.xero_client_secret,
+                token["refresh_token"],
+            )
+            print("Refreshed Xero access token.")
+        except Exception as exc:  # noqa: BLE001
+            print(f"Could not refresh Xero access token; using existing token: {exc}")
+
     return {"access_token": token["access_token"], "tenant_id": tenant_id}
 
 
@@ -1185,7 +1293,7 @@ def _flatten_line_items(
                     "AccountCode": account_code_str or None,
                     "AccountName": account_name,
                     "Description": desc,
-                    "Amount": amount,
+                    "Amount": _signed_line_item_amount(tx_type, amount),
                 }
             )
     return rows
@@ -1349,7 +1457,7 @@ def flatten_invoice_balance_sheet_synthetic_rows(
                 "AccountCode": control_account_code,
                 "AccountName": account_lookup.get(control_account_code),
                 "Description": f"{tx_type} gross balance",
-                "Amount": _safe_float(invoice.get("Total")),
+                "Amount": -abs(_safe_float(invoice.get("Total"))) if tx_type == "Bill" else abs(_safe_float(invoice.get("Total"))),
                 "BalanceSheetSyntheticKind": "InvoiceGross",
                 "SourceDocumentID": invoice.get("InvoiceID"),
                 "Status": status,
@@ -1370,7 +1478,7 @@ def flatten_invoice_balance_sheet_synthetic_rows(
                     "AccountCode": control_account_code,
                     "AccountName": account_lookup.get(control_account_code),
                     "Description": f"{tx_type} payment allocation",
-                    "Amount": -_safe_float(payment.get("Amount")),
+                    "Amount": abs(_safe_float(payment.get("Amount"))) if tx_type == "Bill" else -abs(_safe_float(payment.get("Amount"))),
                     "BalanceSheetSyntheticKind": "Payment",
                     "SourceDocumentID": invoice.get("InvoiceID"),
                     "PaymentID": payment.get("PaymentID"),
@@ -1415,10 +1523,10 @@ def flatten_bank_balance_sheet_synthetic_rows(
         tx_type = str(tx.get("Type") or "").upper()
         if tx_type == "RECEIVE":
             bank_sign = 1.0
-            tax_sign = 1.0
+            tax_sign = -1.0
         elif tx_type == "SPEND":
             bank_sign = -1.0
-            tax_sign = -1.0
+            tax_sign = 1.0
         else:
             bank_sign = 0.0
             tax_sign = 0.0
@@ -1480,10 +1588,10 @@ def flatten_credit_note_balance_sheet_synthetic_rows(
         note_type = str(note.get("Type") or "").upper()
         if note_type == "ACCRECCREDIT":
             control_code = receivable_account_code
-            tax_sign = -1.0
+            tax_sign = 1.0
         elif note_type == "ACCPAYCREDIT":
             control_code = payable_account_code
-            tax_sign = 1.0
+            tax_sign = -1.0
         else:
             control_code = None
             tax_sign = 0.0
@@ -1501,7 +1609,7 @@ def flatten_credit_note_balance_sheet_synthetic_rows(
                 "AccountCode": control_code,
                 "AccountName": account_lookup.get(control_code),
                 "Description": f"{note_type} credit note control balance",
-                "Amount": -_safe_float(note.get("Total")),
+                "Amount": abs(_safe_float(note.get("Total"))) if note_type == "ACCPAYCREDIT" else -abs(_safe_float(note.get("Total"))),
                 "BalanceSheetSyntheticKind": "CreditNoteGross",
                 "SourceDocumentID": note.get("CreditNoteID"),
                 "Status": status,
@@ -1519,6 +1627,130 @@ def flatten_credit_note_balance_sheet_synthetic_rows(
             tax_sign,
         )
 
+    return rows
+
+
+def flatten_payments_balance_sheet_evidence_rows(
+    payments_payload: Dict[str, Any],
+    start_date: date,
+    end_date: date,
+    account_lookup: Dict[str, str],
+) -> List[Dict[str, Any]]:
+    rows: List[Dict[str, Any]] = []
+    for payment in payments_payload.get("Payments", []) or []:
+        status = str(payment.get("Status") or "").upper().strip()
+        if status in {"DELETED", "VOIDED"}:
+            continue
+        date_raw = payment.get("Date")
+        date_str, date_obj = _normalize_xero_date(date_raw)
+        if not _in_date_range(date_obj, start_date, end_date):
+            continue
+
+        account = payment.get("Account") or {}
+        account_code = str(account.get("Code") or "").strip()
+        if not account_code:
+            continue
+        invoice = payment.get("Invoice") or {}
+        contact = _contact_name(invoice) or _contact_name(payment)
+        rows.append(
+            {
+                "Type": "Payment",
+                "InvoiceNumber": invoice.get("InvoiceNumber") or invoice.get("InvoiceID") or payment.get("PaymentID"),
+                "Date": date_str or date_raw,
+                "Contact": contact,
+                "AccountCode": account_code,
+                "AccountName": account_lookup.get(account_code) or account.get("Name"),
+                "Description": f"Payment {payment.get('PaymentID') or ''}".strip(),
+                "Amount": (
+                    -abs(_safe_float(payment.get("Amount")))
+                    if str(payment.get("PaymentType") or "").upper().startswith("ACCPAY")
+                    else abs(_safe_float(payment.get("Amount")))
+                    if str(payment.get("PaymentType") or "").upper().startswith("ACCREC")
+                    else _safe_float(payment.get("Amount"))
+                ),
+                "BalanceSheetSyntheticKind": "PaymentEndpoint",
+                "SourceDocumentID": payment.get("PaymentID"),
+                "Status": status,
+            }
+        )
+    return rows
+
+
+def flatten_bank_transfers_balance_sheet_evidence_rows(
+    transfers_payload: Dict[str, Any],
+    start_date: date,
+    end_date: date,
+    account_lookup: Dict[str, str],
+) -> List[Dict[str, Any]]:
+    rows: List[Dict[str, Any]] = []
+    for transfer in transfers_payload.get("BankTransfers", []) or []:
+        date_raw = transfer.get("Date")
+        date_str, date_obj = _normalize_xero_date(date_raw)
+        if not _in_date_range(date_obj, start_date, end_date):
+            continue
+
+        amount = _safe_float(transfer.get("Amount"))
+        transfer_id = transfer.get("BankTransferID") or transfer.get("ID")
+        for field, sign in [("FromBankAccount", -1.0), ("ToBankAccount", 1.0)]:
+            account = transfer.get(field) or {}
+            account_code = str(account.get("Code") or "").strip()
+            if not account_code:
+                continue
+            rows.append(
+                {
+                    "Type": "BankTransfer",
+                    "InvoiceNumber": transfer.get("Reference") or transfer_id,
+                    "Date": date_str or date_raw,
+                    "Contact": "Bank Transfer",
+                    "AccountCode": account_code,
+                    "AccountName": account_lookup.get(account_code) or account.get("Name"),
+                    "Description": f"{field} transfer {transfer.get('Reference') or ''}".strip(),
+                    "Amount": sign * amount,
+                    "BalanceSheetSyntheticKind": field,
+                    "SourceDocumentID": transfer_id,
+                    "Status": transfer.get("Status"),
+                }
+            )
+    return rows
+
+
+def flatten_finance_balance_sheet_evidence_rows(
+    finance_payload: Dict[str, Any],
+    balance_date: str,
+    account_lookup: Dict[str, str],
+) -> List[Dict[str, Any]]:
+    rows: List[Dict[str, Any]] = []
+    groups = [
+        ("asset", finance_payload.get("asset") or finance_payload.get("Asset")),
+        ("liability", finance_payload.get("liability") or finance_payload.get("Liability")),
+        ("equity", finance_payload.get("equity") or finance_payload.get("Equity")),
+    ]
+    for group_name, group_payload in groups:
+        if not isinstance(group_payload, dict):
+            continue
+        for account_type in group_payload.get("accountTypes", []) or []:
+            type_name = account_type.get("accountType")
+            for account in account_type.get("accounts", []) or []:
+                account_code = str(account.get("code") or "").strip()
+                rows.append(
+                    {
+                        "Type": "FinanceBalanceSheet",
+                        "InvoiceNumber": account.get("accountID"),
+                        "Date": balance_date,
+                        "Contact": "Xero Finance API",
+                        "AccountCode": account_code or None,
+                        "AccountName": account_lookup.get(account_code) or account.get("name"),
+                        "Description": f"Finance API {group_name} {type_name or ''}".strip(),
+                        "Amount": _signed_balance_sheet_report_amount(
+                            group_name,
+                            account.get("name") or "",
+                            _safe_float(account.get("total")),
+                        ),
+                        "BalanceSheetSyntheticKind": "FinanceAPIAccountDetail",
+                        "SourceDocumentID": account.get("accountID"),
+                        "FinanceReportingCode": account.get("reportingCode"),
+                    }
+                )
     return rows
 
 
@@ -1622,7 +1854,7 @@ def flatten_manual_journals(
                     "AccountCode": account_code or None,
                     "AccountName": account_name or None,
                     "Description": line_desc,
-                    "Amount": amount,
+                    "Amount": _signed_journal_amount(amount),
                     "JournalStatus": status,
                     "ShowOnCashBasisReports": show_on_cash,
                 }
@@ -1647,10 +1879,13 @@ def flatten_journals(
     already_covered_sources = {
         "ACCREC",
         "ACCPAY",
+        "ACCRECPAYMENT",
+        "ACCPAYPAYMENT",
         "ACCRECCREDIT",
         "ACCPAYCREDIT",
         "CASHREC",
         "CASHPAID",
+        "MANJOURNAL",
         "TRANSFER",
     }
 
@@ -1693,7 +1928,7 @@ def flatten_journals(
                     "AccountCode": account_code,
                     "AccountName": account_name or None,
                     "Description": desc,
-                    "Amount": amount,
+                    "Amount": _signed_journal_amount(amount),
                     "JournalSourceType": source_type,
                     "JournalID": journal_id,
                 }
@@ -1802,9 +2037,18 @@ def _fetch_all_pages(
     all_items: List[Dict[str, Any]] = []
     for page in range(1, max_pages + 1):
         try:
-            payload = fetch_fn(access_token, tenant_id, page=page, summary_only=False, order="Date ASC")
+            try:
+                payload = fetch_fn(access_token, tenant_id, page=page, summary_only=False, order="Date ASC")
+            except TypeError:
+                payload = fetch_fn(access_token, tenant_id, page=page, order="Date ASC")
+        except requests.exceptions.HTTPError as exc:
+            status_code = getattr(exc.response, "status_code", None)
+            if status_code == 429:
+                print(f"Rate limited while fetching {label} page {page}; using pages fetched so far.")
+                break
+            raise
         except TypeError:
-            payload = fetch_fn(access_token, tenant_id, page=page, order="Date ASC")
+            payload = fetch_fn(access_token, tenant_id, page=page)
         items = payload.get(list_key, [])
         if not items:
             break
@@ -1842,6 +2086,56 @@ def _fetch_all_journals(
     if page_count == max_pages:
         print(f"Reached max pages ({max_pages}) for journals; results may be incomplete.")
     return {"Journals": all_journals}
+
+
+def _cached_fetch_all_invoices(
+    args: argparse.Namespace,
+    cache_filename: str,
+    fetch_fn,
+    access_token: str,
+    tenant_id: str,
+    label: str,
+) -> Dict[str, Any]:
+    if args.use_cache:
+        cached = _load_json_cache(cache_filename)
+        if cached is not None:
+            return cached
+    payload = _fetch_all_invoices(fetch_fn, access_token, tenant_id, args.max_pages, label)
+    _write_json_cache(cache_filename, payload)
+    return payload
+
+
+def _cached_fetch_all_pages(
+    args: argparse.Namespace,
+    cache_filename: str,
+    fetch_fn,
+    access_token: str,
+    tenant_id: str,
+    label: str,
+    list_key: str,
+) -> Dict[str, Any]:
+    if args.use_cache:
+        cached = _load_json_cache(cache_filename)
+        if cached is not None:
+            return cached
+    payload = _fetch_all_pages(fetch_fn, access_token, tenant_id, args.max_pages, label, list_key)
+    _write_json_cache(cache_filename, payload)
+    return payload
+
+
+def _cached_fetch_journals(
+    args: argparse.Namespace,
+    cache_filename: str,
+    access_token: str,
+    tenant_id: str,
+) -> Dict[str, Any]:
+    if args.use_cache:
+        cached = _load_json_cache(cache_filename)
+        if cached is not None:
+            return cached
+    payload = _fetch_all_journals(access_token, tenant_id, args.max_pages)
+    _write_json_cache(cache_filename, payload)
+    return payload
 
 
 def _filter_profit_loss_rows(
@@ -1890,38 +2184,105 @@ def _prepare_balance_sheet_summary(balance_sheet_df: pd.DataFrame) -> pd.DataFra
     )
 
 
+def _balance_sheet_comparison_key(df: pd.DataFrame) -> pd.Series:
+    key = df.get("AccountCode", pd.Series("", index=df.index)).fillna("").astype(str).str.strip()
+    if "BalanceSheetAccountName" in df.columns:
+        key = key.mask(key == "", df["BalanceSheetAccountName"].fillna("").astype(str))
+    elif "BalanceSheetCategory" in df.columns:
+        key = key.mask(key == "", df["BalanceSheetCategory"].fillna("").astype(str))
+    return key
+
+
+def _xero_balance_sheet_official_summary(xero_balance_sheet_df: pd.DataFrame) -> pd.DataFrame:
+    columns = [
+        "BalanceSheetSection",
+        "BalanceSheetSectionPath",
+        "BalanceSheetCategory",
+        "BalanceSheetAccountName",
+        "AccountID",
+        "AccountCode",
+        "Amount",
+        "XeroRowType",
+    ]
+    if xero_balance_sheet_df.empty:
+        return pd.DataFrame(columns=columns)
+
+    aligned = xero_balance_sheet_df.copy()
+    aligned["Amount"] = pd.to_numeric(aligned.get("Amount", 0), errors="coerce").fillna(0.0)
+    for col in columns:
+        if col not in aligned.columns:
+            aligned[col] = ""
+    return aligned[columns]
+
+
+def _balance_sheet_amounts_by_key(balance_sheet_df: pd.DataFrame, amount_col: str) -> pd.DataFrame:
+    if balance_sheet_df.empty:
+        return pd.DataFrame(columns=["ComparisonKey", amount_col])
+    working = balance_sheet_df.copy()
+    working["ComparisonKey"] = _balance_sheet_comparison_key(working)
+    working[amount_col] = pd.to_numeric(working.get("Amount", 0), errors="coerce").fillna(0.0)
+    return working[["ComparisonKey", amount_col]]
+
+
+def _period_balance_sheet_movements(
+    balance_sheet_df: pd.DataFrame,
+    start_date: date,
+    end_date: date,
+) -> pd.DataFrame:
+    if balance_sheet_df.empty:
+        return pd.DataFrame(columns=["ComparisonKey", "Movement_Amount"])
+    working = balance_sheet_df.copy()
+    working["Amount"] = pd.to_numeric(working.get("Amount", 0), errors="coerce").fillna(0.0)
+    working["ParsedDate"] = working.get("Date", "").apply(_parse_xero_date)
+    working = working[
+        working["ParsedDate"].apply(lambda value: value is not None and start_date <= value <= end_date)
+    ].copy()
+    if working.empty:
+        return pd.DataFrame(columns=["ComparisonKey", "Movement_Amount"])
+    working["ComparisonKey"] = _balance_sheet_comparison_key(working)
+    return (
+        working.groupby("ComparisonKey", dropna=False)["Amount"]
+        .sum()
+        .reset_index()
+        .rename(columns={"Amount": "Movement_Amount"})
+    )
+
+
 def _write_balance_sheet_outputs(
     balance_sheet_df: pd.DataFrame,
     xero_balance_sheet_df: pd.DataFrame,
+    opening_balance_sheet_df: Optional[pd.DataFrame] = None,
+    movement_start_date: Optional[date] = None,
+    movement_end_date: Optional[date] = None,
+    pl_net_profit: Optional[float] = None,
 ) -> pd.DataFrame:
     detail_path = OUTPUT_DIR / "balance_sheet_mapping_report.xlsx"
     summary_path = OUTPUT_DIR / "balance_sheet_mapping_summary.xlsx"
     summary_csv_path = OUTPUT_DIR / "balance_sheet_mapping_summary.csv"
+    evidence_path = OUTPUT_DIR / "balance_sheet_evidence_report.xlsx"
+    evidence_csv_path = OUTPUT_DIR / "balance_sheet_evidence_report.csv"
+    evidence_summary_path = OUTPUT_DIR / "balance_sheet_evidence_summary.csv"
+
+    official_summary = _xero_balance_sheet_official_summary(xero_balance_sheet_df)
+    official_summary.to_excel(detail_path, index=False)
+    official_summary.to_excel(summary_path, index=False)
+    official_summary.to_csv(summary_csv_path, index=False)
 
     if balance_sheet_df.empty:
-        pd.DataFrame().to_excel(detail_path, index=False)
-        summary = _prepare_balance_sheet_summary(balance_sheet_df)
-        summary.to_excel(summary_path, index=False)
-        summary.to_csv(summary_csv_path, index=False)
-        return summary
+        pd.DataFrame().to_excel(evidence_path, index=False)
+        pd.DataFrame().to_csv(evidence_csv_path, index=False)
+        pd.DataFrame().to_csv(evidence_summary_path, index=False)
+    else:
+        evidence_df = balance_sheet_df.copy()
+        evidence_df["Amount"] = pd.to_numeric(evidence_df.get("Amount", 0), errors="coerce").fillna(0.0)
+        evidence_df.to_excel(evidence_path, index=False)
+        evidence_df.to_csv(evidence_csv_path, index=False)
+        _prepare_balance_sheet_summary(evidence_df).to_csv(evidence_summary_path, index=False)
 
-    output_df = balance_sheet_df.copy()
-    output_df["Amount"] = pd.to_numeric(output_df.get("Amount", 0), errors="coerce").fillna(0.0)
-    output_df.to_excel(detail_path, index=False)
-    summary = _prepare_balance_sheet_summary(output_df)
-    summary.to_excel(summary_path, index=False)
-    summary.to_csv(summary_csv_path, index=False)
-
-    if not xero_balance_sheet_df.empty:
-        xero_compare = xero_balance_sheet_df.copy()
+    if not official_summary.empty:
+        xero_compare = official_summary.copy()
         xero_compare["Xero_Amount"] = pd.to_numeric(xero_compare.get("Amount", 0), errors="coerce").fillna(0.0)
-        xero_compare["ComparisonKey"] = (
-            xero_compare.get("AccountCode", "").fillna("").astype(str).str.strip()
-        )
-        xero_compare.loc[
-            xero_compare["ComparisonKey"] == "",
-            "ComparisonKey",
-        ] = xero_compare.get("BalanceSheetAccountName", "").fillna("").astype(str)
+        xero_compare["ComparisonKey"] = _balance_sheet_comparison_key(xero_compare)
         xero_compare = xero_compare[
             [
                 "ComparisonKey",
@@ -1933,28 +2294,74 @@ def _write_balance_sheet_outputs(
             ]
         ]
 
-        detail_compare = output_df.copy()
-        detail_compare["ComparisonKey"] = detail_compare.get("AccountCode", "").fillna("").astype(str).str.strip()
-        detail_compare.loc[
-            detail_compare["ComparisonKey"] == "",
-            "ComparisonKey",
-        ] = detail_compare.get("BalanceSheetAccountName", "").fillna("").astype(str)
-        detail_compare = (
-            detail_compare.groupby("ComparisonKey", dropna=False)["Amount"]
-            .sum()
-            .reset_index()
-            .rename(columns={"Amount": "Detail_Amount"})
-        )
+        mapped_compare = official_summary.copy()
+        mapped_compare["ComparisonKey"] = _balance_sheet_comparison_key(mapped_compare)
+        mapped_compare = mapped_compare[["ComparisonKey", "Amount"]].rename(columns={"Amount": "Detail_Amount"})
 
-        comparison = xero_compare.merge(detail_compare, on="ComparisonKey", how="outer")
+        comparison = xero_compare.merge(mapped_compare, on="ComparisonKey", how="left")
         comparison["Xero_Amount"] = pd.to_numeric(comparison.get("Xero_Amount", 0), errors="coerce").fillna(0.0)
         comparison["Detail_Amount"] = pd.to_numeric(comparison.get("Detail_Amount", 0), errors="coerce").fillna(0.0)
         comparison["Difference"] = comparison["Detail_Amount"] - comparison["Xero_Amount"]
-        comparison.sort_values("ComparisonKey", inplace=True)
         comparison.to_csv(OUTPUT_DIR / "balance_sheet_xero_vs_detail_diff.csv", index=False)
         comparison.to_excel(OUTPUT_DIR / "balance_sheet_xero_vs_detail_diff.xlsx", index=False)
 
-    return summary
+        opening_compare = _balance_sheet_amounts_by_key(
+            opening_balance_sheet_df if opening_balance_sheet_df is not None else pd.DataFrame(),
+            "Opening_Amount",
+        )
+        if movement_start_date is not None and movement_end_date is not None:
+            movement_compare = _period_balance_sheet_movements(
+                balance_sheet_df,
+                movement_start_date,
+                movement_end_date,
+            )
+        else:
+            movement_compare = pd.DataFrame(columns=["ComparisonKey", "Movement_Amount"])
+
+        ai_comparison = xero_compare.merge(opening_compare, on="ComparisonKey", how="left")
+        ai_comparison = ai_comparison.merge(movement_compare, on="ComparisonKey", how="left")
+        ai_comparison["Xero_Amount"] = pd.to_numeric(
+            ai_comparison.get("Xero_Amount", 0),
+            errors="coerce",
+        ).fillna(0.0)
+        ai_comparison["Opening_Amount"] = pd.to_numeric(
+            ai_comparison.get("Opening_Amount", 0),
+            errors="coerce",
+        ).fillna(0.0)
+        ai_comparison["Movement_Amount"] = pd.to_numeric(
+            ai_comparison.get("Movement_Amount", 0),
+            errors="coerce",
+        ).fillna(0.0)
+        ai_comparison["AI_Ending_Amount"] = ai_comparison["Opening_Amount"] + ai_comparison["Movement_Amount"]
+
+        if pl_net_profit is not None:
+            cye_mask = ai_comparison["ComparisonKey"] == "Current Year Earnings"
+            if cye_mask.any():
+                ai_comparison.loc[cye_mask, "Opening_Amount"] = 0.0
+                ai_comparison.loc[cye_mask, "Movement_Amount"] = float(pl_net_profit)
+                ai_comparison.loc[cye_mask, "AI_Ending_Amount"] = float(pl_net_profit)
+
+        asset_sections = {"Bank", "Current Assets", "Fixed Assets", "Assets"}
+        liability_sections = {"Liabilities", "Current Liabilities"}
+        asset_mask = ai_comparison["BalanceSheetSection"].isin(asset_sections)
+        liability_mask = ai_comparison["BalanceSheetSection"].isin(liability_sections)
+        net_assets_mask = ai_comparison["ComparisonKey"] == "Net Assets"
+        if net_assets_mask.any():
+            opening_net_assets = float(
+                ai_comparison.loc[asset_mask | liability_mask, "Opening_Amount"].sum()
+            )
+            movement_net_assets = float(
+                ai_comparison.loc[asset_mask | liability_mask, "Movement_Amount"].sum()
+            )
+            ai_comparison.loc[net_assets_mask, "Opening_Amount"] = opening_net_assets
+            ai_comparison.loc[net_assets_mask, "Movement_Amount"] = movement_net_assets
+            ai_comparison.loc[net_assets_mask, "AI_Ending_Amount"] = opening_net_assets + movement_net_assets
+
+        ai_comparison["Difference"] = ai_comparison["AI_Ending_Amount"] - ai_comparison["Xero_Amount"]
+        ai_comparison.to_csv(OUTPUT_DIR / "balance_sheet_xero_vs_ai_detail_diff.csv", index=False)
+        ai_comparison.to_excel(OUTPUT_DIR / "balance_sheet_xero_vs_ai_detail_diff.xlsx", index=False)
+
+    return official_summary
 
 
 def _write_html_report(
@@ -3875,22 +4282,37 @@ def main() -> None:
     report_from, report_to = get_report_date_range(args)
     start_date = _parse_iso_date(report_from)
     end_date = _parse_iso_date(report_to)
-    balance_sheet_date = date.today().isoformat()
+    balance_sheet_date = report_to
+    opening_balance_sheet_date = (start_date - timedelta(days=1)).isoformat()
     print(f"Fetching Profit and Loss report ({report_from} to {report_to})...")
-    pl = get_profit_and_loss(
-        access_token,
-        tenant_id,
-        from_date=report_from,
-        to_date=report_to,
-        payments_only=args.payments_only,
-    )
-    with open(OUTPUT_DIR / "raw_pl.json", "w", encoding="utf-8") as f:
-        json.dump(pl, f, indent=2)
+    cached_pl = _load_json_cache("raw_pl.json") if args.use_cache else None
+    if cached_pl is not None:
+        pl = cached_pl
+    else:
+        pl = get_profit_and_loss(
+            access_token,
+            tenant_id,
+            from_date=report_from,
+            to_date=report_to,
+            payments_only=args.payments_only,
+        )
+        _write_json_cache("raw_pl.json", pl)
 
     print(f"Fetching Balance Sheet report (as at {balance_sheet_date})...")
-    balance_sheet = get_balance_sheet(access_token, tenant_id, date=balance_sheet_date)
-    with open(OUTPUT_DIR / "raw_balance_sheet.json", "w", encoding="utf-8") as f:
-        json.dump(balance_sheet, f, indent=2)
+    cached_balance_sheet = _load_json_cache("raw_balance_sheet.json") if args.use_cache else None
+    if cached_balance_sheet is not None:
+        balance_sheet = cached_balance_sheet
+    else:
+        balance_sheet = get_balance_sheet(access_token, tenant_id, date=balance_sheet_date)
+        _write_json_cache("raw_balance_sheet.json", balance_sheet)
+
+    print(f"Fetching opening Balance Sheet report (as at {opening_balance_sheet_date})...")
+    cached_opening_balance_sheet = _load_json_cache("raw_opening_balance_sheet.json") if args.use_cache else None
+    if cached_opening_balance_sheet is not None:
+        opening_balance_sheet = cached_opening_balance_sheet
+    else:
+        opening_balance_sheet = get_balance_sheet(access_token, tenant_id, date=opening_balance_sheet_date)
+        _write_json_cache("raw_opening_balance_sheet.json", opening_balance_sheet)
 
     # 2) Pull chart of accounts for predefined fields
     print("Fetching chart of accounts...")
@@ -3947,6 +4369,13 @@ def main() -> None:
         extract_xero_balance_sheet_lines(balance_sheet),
         account_rows,
     )
+    opening_balance_sheet_df = _enrich_balance_sheet_account_codes(
+        extract_xero_balance_sheet_lines(opening_balance_sheet),
+        account_rows,
+    )
+    if not opening_balance_sheet_df.empty:
+        opening_balance_sheet_df.to_csv(OUTPUT_DIR / "xero_opening_balance_sheet_lines.csv", index=False)
+        opening_balance_sheet_df.to_excel(OUTPUT_DIR / "xero_opening_balance_sheet_lines.xlsx", index=False)
     if not xero_balance_sheet_df.empty:
         xero_balance_sheet_df.to_csv(OUTPUT_DIR / "xero_balance_sheet_lines.csv", index=False)
         xero_balance_sheet_df.to_excel(OUTPUT_DIR / "xero_balance_sheet_lines.xlsx", index=False)
@@ -3957,37 +4386,90 @@ def main() -> None:
 
     # 3) Pull bills and invoices (all pages)
     print("Fetching bills (ACCPAY)...")
-    bills_payload = _fetch_all_invoices(get_bills, access_token, tenant_id, args.max_pages, "bills")
+    bills_payload = _cached_fetch_all_invoices(
+        args,
+        "raw_bills.json",
+        get_bills,
+        access_token,
+        tenant_id,
+        "bills",
+    )
     print("Fetching invoices (ACCREC)...")
-    invoices_payload = _fetch_all_invoices(get_invoices, access_token, tenant_id, args.max_pages, "invoices")
+    invoices_payload = _cached_fetch_all_invoices(
+        args,
+        "raw_invoices.json",
+        get_invoices,
+        access_token,
+        tenant_id,
+        "invoices",
+    )
     print("Fetching bank transactions...")
-    bank_payload = _fetch_all_pages(
+    bank_payload = _cached_fetch_all_pages(
+        args,
+        "raw_bank_transactions.json",
         get_bank_transactions,
         access_token,
         tenant_id,
-        args.max_pages,
         "bank transactions",
         "BankTransactions",
     )
     print("Fetching credit notes...")
-    credit_payload = _fetch_all_pages(
+    credit_payload = _cached_fetch_all_pages(
+        args,
+        "raw_credit_notes.json",
         get_credit_notes,
         access_token,
         tenant_id,
-        args.max_pages,
         "credit notes",
         "CreditNotes",
     )
+    print("Fetching payments...")
+    payments_payload = _cached_fetch_all_pages(
+        args,
+        "raw_payments.json",
+        get_payments,
+        access_token,
+        tenant_id,
+        "payments",
+        "Payments",
+    )
+    print("Fetching bank transfers...")
+    bank_transfers_payload = _cached_fetch_all_pages(
+        args,
+        "raw_bank_transfers.json",
+        get_bank_transfers,
+        access_token,
+        tenant_id,
+        "bank transfers",
+        "BankTransfers",
+    )
+    finance_balance_sheet_payload: Dict[str, Any] = {}
+    print("Fetching Finance API Balance Sheet account detail...")
+    cached_finance_payload = _load_json_cache("raw_finance_balance_sheet.json") if args.use_cache else None
+    if cached_finance_payload is not None:
+        finance_balance_sheet_payload = cached_finance_payload
+    else:
+        try:
+            finance_balance_sheet_payload = get_financial_statement_balance_sheet(
+                access_token,
+                tenant_id,
+                balance_sheet_date,
+            )
+            _write_json_cache("raw_finance_balance_sheet.json", finance_balance_sheet_payload)
+        except Exception as exc:  # noqa: BLE001
+            print(f"Finance API Balance Sheet not available or not authorized: {exc}")
+
     manual_journal_payload: Dict[str, Any] = {"ManualJournals": []}
     if args.no_manual_journals:
         print("Manual journals disabled by --no-manual-journals.")
     else:
         print("Fetching manual journals...")
-        manual_journal_payload = _fetch_all_pages(
+        manual_journal_payload = _cached_fetch_all_pages(
+            args,
+            "raw_manual_journals.json",
             get_manual_journals,
             access_token,
             tenant_id,
-            args.max_pages,
             "manual journals",
             "ManualJournals",
         )
@@ -3997,7 +4479,7 @@ def main() -> None:
     else:
         print("Fetching journals...")
         try:
-            journals_payload = _fetch_all_journals(access_token, tenant_id, args.max_pages)
+            journals_payload = _cached_fetch_journals(args, "raw_journals.json", access_token, tenant_id)
         except Exception as exc:  # noqa: BLE001
             print(f"Journals not available or not authorized: {exc}")
 
@@ -4005,6 +4487,8 @@ def main() -> None:
     invoice_counts = _count_line_items(invoices_payload, "Invoices")
     bank_counts = _count_line_items(bank_payload, "BankTransactions")
     credit_counts = _count_line_items(credit_payload, "CreditNotes")
+    payment_counts = _count_line_items(payments_payload, "Payments")
+    bank_transfer_counts = _count_line_items(bank_transfers_payload, "BankTransfers")
     manual_journal_counts = _count_manual_journal_lines(manual_journal_payload)
     journal_counts = _count_journal_lines(journals_payload)
     print(
@@ -4028,6 +4512,16 @@ def main() -> None:
         f"({credit_counts['zero_lines']} with 0 lines)."
     )
     print(
+        "Payments fetched: "
+        f"{payment_counts['items']} payments "
+        f"({payment_counts['zero_lines']} with 0 lines)."
+    )
+    print(
+        "Bank transfers fetched: "
+        f"{bank_transfer_counts['items']} transfers "
+        f"({bank_transfer_counts['zero_lines']} with 0 lines)."
+    )
+    print(
         "Manual journals fetched: "
         f"{manual_journal_counts['items']} journals, {manual_journal_counts['lines']} lines "
         f"({manual_journal_counts['zero_lines']} with 0 lines)."
@@ -4039,14 +4533,14 @@ def main() -> None:
     )
 
     if args.dump_raw:
-        (OUTPUT_DIR / "raw_bills.json").write_text(json.dumps(bills_payload, indent=2), encoding="utf-8")
-        (OUTPUT_DIR / "raw_invoices.json").write_text(json.dumps(invoices_payload, indent=2), encoding="utf-8")
-        (OUTPUT_DIR / "raw_bank_transactions.json").write_text(json.dumps(bank_payload, indent=2), encoding="utf-8")
-        (OUTPUT_DIR / "raw_credit_notes.json").write_text(json.dumps(credit_payload, indent=2), encoding="utf-8")
-        (OUTPUT_DIR / "raw_manual_journals.json").write_text(
-            json.dumps(manual_journal_payload, indent=2), encoding="utf-8"
-        )
-        (OUTPUT_DIR / "raw_journals.json").write_text(json.dumps(journals_payload, indent=2), encoding="utf-8")
+        _write_json_cache("raw_bills.json", bills_payload)
+        _write_json_cache("raw_invoices.json", invoices_payload)
+        _write_json_cache("raw_bank_transactions.json", bank_payload)
+        _write_json_cache("raw_credit_notes.json", credit_payload)
+        _write_json_cache("raw_payments.json", payments_payload)
+        _write_json_cache("raw_bank_transfers.json", bank_transfers_payload)
+        _write_json_cache("raw_manual_journals.json", manual_journal_payload)
+        _write_json_cache("raw_journals.json", journals_payload)
 
     # 4) Pull payroll report (preferred) or payruns (fallback)
     print("Fetching payroll report (if enabled)...")
@@ -4145,7 +4639,7 @@ def main() -> None:
             payable_account_code,
             gst_account_code,
             account_lookup,
-            tax_sign=-1.0,
+            tax_sign=1.0,
         )
         + flatten_invoice_balance_sheet_synthetic_rows(
             invoices_payload,
@@ -4155,7 +4649,7 @@ def main() -> None:
             receivable_account_code,
             gst_account_code,
             account_lookup,
-            tax_sign=1.0,
+            tax_sign=-1.0,
         )
         + flatten_bank_balance_sheet_synthetic_rows(
             bank_payload,
@@ -4173,6 +4667,23 @@ def main() -> None:
             gst_account_code,
             account_lookup,
         )
+        + flatten_payments_balance_sheet_evidence_rows(
+            payments_payload,
+            balance_sheet_start_date,
+            end_date,
+            account_lookup,
+        )
+        + flatten_bank_transfers_balance_sheet_evidence_rows(
+            bank_transfers_payload,
+            balance_sheet_start_date,
+            end_date,
+            account_lookup,
+        )
+        + flatten_finance_balance_sheet_evidence_rows(
+            finance_balance_sheet_payload,
+            balance_sheet_date,
+            account_lookup,
+        )
     )
     balance_sheet_rows = _map_balance_sheet_rows(
         balance_sheet_explicit_rows + balance_sheet_synthetic_rows,
@@ -4180,7 +4691,15 @@ def main() -> None:
         balance_sheet_account_map,
     )
     balance_sheet_df = pd.DataFrame(balance_sheet_rows)
-    balance_sheet_summary_df = _write_balance_sheet_outputs(balance_sheet_df, xero_balance_sheet_df)
+    pl_net_profit = extract_xero_pl_net_profit(pl)
+    balance_sheet_summary_df = _write_balance_sheet_outputs(
+        balance_sheet_df,
+        xero_balance_sheet_df,
+        opening_balance_sheet_df=opening_balance_sheet_df,
+        movement_start_date=start_date,
+        movement_end_date=end_date,
+        pl_net_profit=pl_net_profit,
+    )
 
     print(f"Total P&L transaction lines to map: {len(all_rows)}")
     print(f"Total Balance Sheet detail lines: {len(balance_sheet_rows)}")
@@ -4193,6 +4712,8 @@ def main() -> None:
             "invoices": invoice_counts,
             "bank_transactions": bank_counts,
             "credit_notes": credit_counts,
+            "payments": payment_counts,
+            "bank_transfers": bank_transfer_counts,
             "manual_journals": manual_journal_counts,
             "journals": journal_counts,
             "payroll_payruns": {
