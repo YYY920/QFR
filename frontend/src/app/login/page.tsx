@@ -19,9 +19,9 @@ export default function LoginPage() {
     setError('')
     const ok = login(username, password)
     if (ok) {
-      router.push('/')
+      router.push('/profit-loss')
     } else {
-      setError('用户名或密码错误')
+      setError('Invalid username or password')
     }
   }
 
