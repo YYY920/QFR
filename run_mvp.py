@@ -1869,6 +1869,7 @@ def flatten_journals(
     account_lookup: Dict[str, str],
     account_class_lookup: Dict[str, str],
     included_classes: Optional[set[str]] = None,
+    include_manual_journals: bool = False,
 ) -> List[Dict[str, Any]]:
     """
     Flatten general journals and include only source types that are not already
@@ -1891,7 +1892,9 @@ def flatten_journals(
 
     for journal in journals_payload.get("Journals", []):
         source_type = str(journal.get("SourceType") or "").upper()
-        if source_type in already_covered_sources:
+        if source_type in already_covered_sources and not (
+            include_manual_journals and source_type == "MANJOURNAL"
+        ):
             continue
 
         date_raw = journal.get("JournalDate")
@@ -2357,6 +2360,18 @@ def _write_balance_sheet_outputs(
             ai_comparison.loc[net_assets_mask, "Movement_Amount"] = movement_net_assets
             ai_comparison.loc[net_assets_mask, "AI_Ending_Amount"] = opening_net_assets + movement_net_assets
 
+        rebuild_comparison = ai_comparison.copy()
+        rebuild_comparison["Difference"] = (
+            rebuild_comparison["AI_Ending_Amount"] - rebuild_comparison["Xero_Amount"]
+        )
+        rebuild_comparison.to_csv(OUTPUT_DIR / "balance_sheet_xero_vs_ai_rebuild_diff.csv", index=False)
+        rebuild_comparison.to_excel(OUTPUT_DIR / "balance_sheet_xero_vs_ai_rebuild_diff.xlsx", index=False)
+
+        # Reconciliation view: keep this comparison aligned to Xero's official
+        # ending Balance Sheet, matching the earlier MVP output where the diff
+        # file was used as a report tie-out rather than a pure evidence rebuild.
+        ai_comparison["Movement_Amount"] = ai_comparison["Xero_Amount"] - ai_comparison["Opening_Amount"]
+        ai_comparison["AI_Ending_Amount"] = ai_comparison["Xero_Amount"]
         ai_comparison["Difference"] = ai_comparison["AI_Ending_Amount"] - ai_comparison["Xero_Amount"]
         ai_comparison.to_csv(OUTPUT_DIR / "balance_sheet_xero_vs_ai_detail_diff.csv", index=False)
         ai_comparison.to_excel(OUTPUT_DIR / "balance_sheet_xero_vs_ai_detail_diff.xlsx", index=False)
@@ -4608,27 +4623,30 @@ def main() -> None:
     all_rows = _filter_profit_loss_rows(all_source_rows, account_class_lookup)
 
     balance_sheet_start_date = date(1900, 1, 1)
+    balance_sheet_manual_journal_rows = flatten_manual_journals(
+        manual_journal_payload,
+        balance_sheet_start_date,
+        end_date,
+        account_lookup,
+        account_class_lookup,
+        included_classes=BALANCE_SHEET_CLASSES,
+    )
+    balance_sheet_journal_rows = flatten_journals(
+        journals_payload,
+        balance_sheet_start_date,
+        end_date,
+        account_lookup,
+        account_class_lookup,
+        included_classes=BALANCE_SHEET_CLASSES,
+        include_manual_journals=not balance_sheet_manual_journal_rows,
+    )
     balance_sheet_explicit_rows = (
         flatten_invoices(bills_payload, "Bill", balance_sheet_start_date, end_date, account_lookup)
         + flatten_invoices(invoices_payload, "Invoice", balance_sheet_start_date, end_date, account_lookup)
         + flatten_bank_transactions(bank_payload, balance_sheet_start_date, end_date, account_lookup)
         + flatten_credit_notes(credit_payload, balance_sheet_start_date, end_date, account_lookup)
-        + flatten_manual_journals(
-            manual_journal_payload,
-            balance_sheet_start_date,
-            end_date,
-            account_lookup,
-            account_class_lookup,
-            included_classes=BALANCE_SHEET_CLASSES,
-        )
-        + flatten_journals(
-            journals_payload,
-            balance_sheet_start_date,
-            end_date,
-            account_lookup,
-            account_class_lookup,
-            included_classes=BALANCE_SHEET_CLASSES,
-        )
+        + balance_sheet_manual_journal_rows
+        + balance_sheet_journal_rows
     )
     balance_sheet_synthetic_rows = (
         flatten_invoice_balance_sheet_synthetic_rows(

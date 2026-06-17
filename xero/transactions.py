@@ -88,3 +88,44 @@ def get_credit_notes(
     resp = requests.get(url, headers=_auth_headers(access_token, tenant_id), params=params, timeout=60)
     resp.raise_for_status()
     return resp.json()
+
+
+def get_payments(
+    access_token: str,
+    tenant_id: str,
+    page: int = 1,
+    where: Optional[str] = None,
+    order: Optional[str] = None,
+    page_size: Optional[int] = 100,
+) -> Dict[str, Any]:
+    """Payments for invoices and credit notes."""
+    url = f"{BASE}/Payments"
+    params: Dict[str, Any] = {"page": page}
+    if where:
+        params["where"] = where
+    if order:
+        params["order"] = order
+    if page_size is not None:
+        params["pageSize"] = page_size
+    resp = requests.get(url, headers=_auth_headers(access_token, tenant_id), params=params, timeout=60)
+    resp.raise_for_status()
+    return resp.json()
+
+
+def get_bank_transfers(
+    access_token: str,
+    tenant_id: str,
+    page: int = 1,
+    where: Optional[str] = None,
+    order: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Bank transfers between bank accounts."""
+    url = f"{BASE}/BankTransfers"
+    params: Dict[str, Any] = {"page": page}
+    if where:
+        params["where"] = where
+    if order:
+        params["order"] = order
+    resp = requests.get(url, headers=_auth_headers(access_token, tenant_id), params=params, timeout=60)
+    resp.raise_for_status()
+    return resp.json()
