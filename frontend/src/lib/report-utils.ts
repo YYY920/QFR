@@ -83,6 +83,40 @@ export function buildMonthlyChartData(
     .map(([month, { income, expense }]) => ({ month, income, expense }))
 }
 
+export function buildSalesByContactChartData(
+  rows: RawRow[],
+  incomeCategories: string[],
+): { name: string; actual: number }[] {
+  const map = new Map<string, number>()
+  rows
+    .filter((r) => isIncomeRow(r, incomeCategories))
+    .forEach((r) => {
+      map.set(r.Contact, (map.get(r.Contact) ?? 0) + r.Amount)
+    })
+  return Array.from(map.entries())
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, actual]) => ({ name, actual }))
+}
+
+export function buildSalesMonthlyTrend(
+  rows: RawRow[],
+  incomeCategories: string[],
+): { month: string; actual: number; budget: number }[] {
+  const map = new Map<string, { actual: number; budget: number }>()
+  rows
+    .filter((r) => isIncomeRow(r, incomeCategories) && r.Budget !== undefined)
+    .forEach((r) => {
+      const month = r.Date.slice(0, 7)
+      const entry = map.get(month) ?? { actual: 0, budget: 0 }
+      entry.actual += r.Amount
+      entry.budget += r.Budget!
+      map.set(month, entry)
+    })
+  return Array.from(map.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([month, { actual, budget }]) => ({ month, actual, budget }))
+}
+
 export function buildConfidenceHistogram(rows: RawRow[]): { bin: string; count: number }[] {
   const buckets = new Array(10).fill(0) as number[]
   rows.forEach((r) => {

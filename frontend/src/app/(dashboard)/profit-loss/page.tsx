@@ -35,7 +35,7 @@ export default function ProfitLossPage() {
   const metrics = useMemo(() => computeMetrics(filteredRows), [filteredRows])
 
   return (
-    <main className="mx-auto max-w-screen-xl px-4 py-6">
+    <main className="mx-auto max-w-7xl px-4 py-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">AI Mapping Report</h1>
         <p className="text-sm text-muted-foreground">
@@ -46,7 +46,7 @@ export default function ProfitLossPage() {
         <FilterPanel filters={filters} allTypes={ALL_TYPES} allAccounts={ALL_ACCOUNTS} onChange={setFilters} onReset={() => setFilters(defaultFilters())} />
         <MetricCards metrics={metrics} />
         <ChartsSection rows={filteredRows} topN={filters.topN} incomeCategories={REPORT_DATA.income_categories} />
-        <DataTables rows={filteredRows} balanceSheetData={REPORT_DATA.balance_sheet_data} balanceSheetSummary={REPORT_DATA.balance_sheet_summary} reviewThreshold={REPORT_DATA.review_threshold} />
+        <DataTables rows={filteredRows} reviewThreshold={REPORT_DATA.review_threshold} />
       </div>
     </main>
   )

@@ -13,6 +13,7 @@ export type RawRow = {
   RuleID: string | null
   OriginalMappedCategory: string
   NormalizationRule: string | null
+  Budget?: number
 }
 
 export type BalanceSheetRow = {
