@@ -1,4 +1,5 @@
 import { Sidebar } from '@/components/Sidebar'
+import { FloatingAssistant } from '@/components/FloatingAssistant'
 
 export default function DashboardLayout({
   children,
@@ -11,6 +12,7 @@ export default function DashboardLayout({
       <main className="flex-1 overflow-auto bg-background">
         {children}
       </main>
+      <FloatingAssistant />
     </div>
   )
 }

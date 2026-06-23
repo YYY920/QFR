@@ -7,11 +7,17 @@ export function checkCredentials(username: string, password: string): boolean {
   return username === TEMP_USERNAME && password === TEMP_PASSWORD
 }
 
-export function login(username: string, password: string): boolean {
+export function login(username: string, password: string, apiKey?: string): boolean {
   const ok = checkCredentials(username, password)
   if (ok) {
     document.cookie = 'qfr_auth=1; path=/; SameSite=Strict'
     sessionStorage.setItem('qfr_session', '1')
+    const trimmedKey = apiKey?.trim()
+    if (trimmedKey) {
+      sessionStorage.setItem('qfr_openai_api_key', trimmedKey)
+    } else {
+      sessionStorage.removeItem('qfr_openai_api_key')
+    }
   }
   return ok
 }
@@ -19,4 +25,5 @@ export function login(username: string, password: string): boolean {
 export function logout(): void {
   document.cookie = 'qfr_auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict'
   sessionStorage.removeItem('qfr_session')
+  sessionStorage.removeItem('qfr_openai_api_key')
 }

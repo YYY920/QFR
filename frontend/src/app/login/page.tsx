@@ -12,12 +12,13 @@ export default function LoginPage() {
   const router = useRouter()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [apiKey, setApiKey] = useState('')
   const [error, setError] = useState('')
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    const ok = login(username, password)
+    const ok = login(username, password, apiKey)
     if (ok) {
       router.push('/profit-loss')
     } else {
@@ -53,6 +54,20 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
               />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="api-key">OpenAI API key (optional)</Label>
+              <Input
+                id="api-key"
+                type="password"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="sk-..."
+                autoComplete="off"
+              />
+              <p className="text-xs text-muted-foreground">
+                Used only for this browser session by the floating AI assistant.
+              </p>
             </div>
             {error && <p role="alert" className="text-sm text-destructive">Invalid username or password</p>}
             <Button type="submit" size="lg" className="w-full bg-blue-700 hover:bg-blue-600 text-white">Sign in</Button>
