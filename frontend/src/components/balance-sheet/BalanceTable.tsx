@@ -1,4 +1,10 @@
+'use client'
+
 import { Fragment } from 'react'
+import { useMemo, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { ExportControls, type ExportMode } from '@/components/ExportControls'
+import { exportRowsToExcel, type ExportRow } from '@/lib/excel-export'
 import { cn } from '@/lib/utils'
 import type { BalanceSheetData, BSLineItem } from '@/lib/balance-sheet-mock'
 
@@ -34,10 +40,150 @@ function ChangeCell({ current, prior }: { current: number; prior: number }) {
   )
 }
 
+type ReviewStatus = 'Pending' | 'Approved' | 'Needs changes' | 'Rejected'
+type ReviewState = Record<string, { status: ReviewStatus; note: string }>
+type BalanceLine = {
+  key: string
+  section: string
+  group: string
+  kind: string
+  account: string
+  current: number
+  prior: number
+}
+
+function flattenBalanceLines(data: BalanceSheetData): BalanceLine[] {
+  const rows: BalanceLine[] = []
+  data.assets.subsections.forEach((section) => {
+    section.items.forEach((item) => rows.push({
+      key: `assets|${section.title}|line|${item.name}`,
+      section: 'Assets',
+      group: section.title,
+      kind: 'Line',
+      account: item.name,
+      current: item.current,
+      prior: item.prior,
+    }))
+    rows.push({
+      key: `assets|${section.title}|subtotal|${section.total.name}`,
+      section: 'Assets',
+      group: section.title,
+      kind: 'Subtotal',
+      account: section.total.name,
+      current: section.total.current,
+      prior: section.total.prior,
+    })
+  })
+  rows.push({
+    key: `assets|total|${data.assets.total.name}`,
+    section: 'Assets',
+    group: 'Assets',
+    kind: 'Total',
+    account: data.assets.total.name,
+    current: data.assets.total.current,
+    prior: data.assets.total.prior,
+  })
+
+  data.liabilities.subsections.forEach((section) => {
+    section.items.forEach((item) => rows.push({
+      key: `liabilities|${section.title}|line|${item.name}`,
+      section: 'Liabilities',
+      group: section.title,
+      kind: 'Line',
+      account: item.name,
+      current: item.current,
+      prior: item.prior,
+    }))
+    rows.push({
+      key: `liabilities|${section.title}|subtotal|${section.total.name}`,
+      section: 'Liabilities',
+      group: section.title,
+      kind: 'Subtotal',
+      account: section.total.name,
+      current: section.total.current,
+      prior: section.total.prior,
+    })
+  })
+  rows.push({
+    key: `liabilities|total|${data.liabilities.total.name}`,
+    section: 'Liabilities',
+    group: 'Liabilities',
+    kind: 'Total',
+    account: data.liabilities.total.name,
+    current: data.liabilities.total.current,
+    prior: data.liabilities.total.prior,
+  })
+  rows.push({
+    key: `net-assets|${data.netAssets.name}`,
+    section: 'Net Assets',
+    group: 'Net Assets',
+    kind: 'Total',
+    account: data.netAssets.name,
+    current: data.netAssets.current,
+    prior: data.netAssets.prior,
+  })
+  data.equity.items.forEach((item) => rows.push({
+    key: `equity|line|${item.name}`,
+    section: 'Equity',
+    group: 'Equity',
+    kind: 'Line',
+    account: item.name,
+    current: item.current,
+    prior: item.prior,
+  }))
+  rows.push({
+    key: `equity|total|${data.equity.total.name}`,
+    section: 'Equity',
+    group: 'Equity',
+    kind: 'Total',
+    account: data.equity.total.name,
+    current: data.equity.total.current,
+    prior: data.equity.total.prior,
+  })
+  return rows
+}
+
+function ReviewCell({
+  rowId,
+  review,
+  onUpdate,
+}: {
+  rowId: string
+  review: { status: ReviewStatus; note: string }
+  onUpdate: (rowId: string, patch: Partial<{ status: ReviewStatus; note: string }>) => void
+}) {
+  return (
+    <td className="min-w-72 px-4 py-2">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-wrap gap-1">
+          {(['Approved', 'Needs changes', 'Rejected'] as ReviewStatus[]).map((status) => (
+            <Button
+              key={status}
+              type="button"
+              size="xs"
+              variant={review.status === status ? 'default' : 'outline'}
+              onClick={() => onUpdate(rowId, { status })}
+              className={review.status === status ? 'bg-blue-700 text-white hover:bg-blue-600' : undefined}
+            >
+              {status}
+            </Button>
+          ))}
+        </div>
+        <input
+          value={review.note}
+          onChange={(event) => onUpdate(rowId, { note: event.target.value })}
+          placeholder="Reviewer note..."
+          className="h-8 rounded-lg border border-input bg-background px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        />
+      </div>
+    </td>
+  )
+}
+
 function SectionHeader({ title }: { title: string }) {
   return (
     <tr className="bg-slate-100">
-      <td colSpan={4} className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-600">
+      <td colSpan={5} className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-600">
         {title}
       </td>
     </tr>
@@ -47,49 +193,138 @@ function SectionHeader({ title }: { title: string }) {
 function SubsectionHeader({ title }: { title: string }) {
   return (
     <tr>
-      <td colSpan={4} className="px-6 py-1.5 text-xs font-medium text-muted-foreground">
+      <td colSpan={5} className="px-6 py-1.5 text-xs font-medium text-muted-foreground">
         {title}
       </td>
     </tr>
   )
 }
 
-function LineItemRow({ item }: { item: BSLineItem }) {
+function LineItemRow({
+  item,
+  rowId,
+  review,
+  onUpdateReview,
+}: {
+  item: BSLineItem
+  rowId: string
+  review: { status: ReviewStatus; note: string }
+  onUpdateReview: (rowId: string, patch: Partial<{ status: ReviewStatus; note: string }>) => void
+}) {
   return (
     <tr className="hover:bg-slate-50">
       <td className="px-4 py-2 pl-10 text-sm">{item.name}</td>
       <AmountCell value={item.current} className="text-sm" />
       <AmountCell value={item.prior} className="text-sm" />
       <ChangeCell current={item.current} prior={item.prior} />
+      <ReviewCell rowId={rowId} review={review} onUpdate={onUpdateReview} />
     </tr>
   )
 }
 
-function SummaryRow({ item }: { item: BSLineItem }) {
+function SummaryRow({
+  item,
+  rowId,
+  review,
+  onUpdateReview,
+}: {
+  item: BSLineItem
+  rowId: string
+  review: { status: ReviewStatus; note: string }
+  onUpdateReview: (rowId: string, patch: Partial<{ status: ReviewStatus; note: string }>) => void
+}) {
   return (
     <tr className="border-t">
       <td className="px-4 py-2 pl-6 text-sm font-medium">{item.name}</td>
       <AmountCell value={item.current} className="text-sm font-medium" />
       <AmountCell value={item.prior} className="text-sm font-medium" />
       <ChangeCell current={item.current} prior={item.prior} />
+      <ReviewCell rowId={rowId} review={review} onUpdate={onUpdateReview} />
     </tr>
   )
 }
 
-function TotalRow({ item, className }: { item: BSLineItem; className?: string }) {
+function TotalRow({
+  item,
+  rowId,
+  review,
+  onUpdateReview,
+  className,
+}: {
+  item: BSLineItem
+  rowId: string
+  review: { status: ReviewStatus; note: string }
+  onUpdateReview: (rowId: string, patch: Partial<{ status: ReviewStatus; note: string }>) => void
+  className?: string
+}) {
   return (
     <tr className={cn('border-t-2 border-slate-300', className)}>
       <td className="px-4 py-2.5 text-sm font-bold">{item.name}</td>
       <AmountCell value={item.current} className="text-sm font-bold" />
       <AmountCell value={item.prior} className="text-sm font-bold" />
       <ChangeCell current={item.current} prior={item.prior} />
+      <ReviewCell rowId={rowId} review={review} onUpdate={onUpdateReview} />
     </tr>
   )
 }
 
 export function BalanceTable({ data }: { data: BalanceSheetData }) {
+  const [reviewState, setReviewState] = useState<ReviewState>({})
+  const [exportMode, setExportMode] = useState<ExportMode>('summary')
+  const flattenedRows = useMemo(() => flattenBalanceLines(data), [data])
+
+  function updateReview(rowId: string, patch: Partial<ReviewState[string]>) {
+    setReviewState((current) => ({
+      ...current,
+      [rowId]: {
+        status: current[rowId]?.status ?? 'Pending',
+        note: current[rowId]?.note ?? '',
+        ...patch,
+      },
+    }))
+  }
+
+  function reviewFor(rowId: string): ReviewState[string] {
+    return reviewState[rowId] ?? { status: 'Pending', note: '' }
+  }
+
+  function lineToExport(row: BalanceLine): ExportRow {
+    const review = reviewFor(row.key)
+    return {
+      Section: row.section,
+      Group: row.group,
+      Type: row.kind,
+      Account: row.account,
+      [data.asAt]: row.current,
+      [data.priorPeriod]: row.prior,
+      Change: row.current - row.prior,
+      'Review Status': review.status,
+      'Reviewer Note': review.note,
+    }
+  }
+
+  function handleExport() {
+    const summaryRows = flattenedRows
+      .filter((row) => row.kind === 'Total')
+      .map(lineToExport)
+    const lineRows = flattenedRows.map(lineToExport)
+    const isSummary = exportMode === 'summary'
+    exportRowsToExcel(
+      isSummary ? summaryRows : lineRows,
+      isSummary ? 'balance-sheet-summary.xlsx' : 'balance-sheet-by-line.xlsx',
+      isSummary ? 'Balance Sheet Summary' : 'Balance Sheet By Line',
+    )
+  }
+
   return (
     <div className="overflow-hidden rounded-lg border">
+      <div className="flex flex-col gap-2 border-b bg-slate-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-sm font-semibold">Balance Sheet Detail</h2>
+          <p className="text-xs text-muted-foreground">Review each balance sheet line and export summary or by-line Excel.</p>
+        </div>
+        <ExportControls mode={exportMode} onModeChange={setExportMode} onExport={handleExport} />
+      </div>
       <table className="w-full">
         <thead>
           <tr className="border-b bg-slate-50">
@@ -105,6 +340,9 @@ export function BalanceTable({ data }: { data: BalanceSheetData }) {
             <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Change
             </th>
+            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Human Review
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
@@ -113,30 +351,39 @@ export function BalanceTable({ data }: { data: BalanceSheetData }) {
           {data.assets.subsections.map((sub) => (
             <Fragment key={sub.title}>
               <SubsectionHeader title={sub.title} />
-              {sub.items.map((item) => <LineItemRow key={item.name} item={item} />)}
-              <SummaryRow item={sub.total} />
+              {sub.items.map((item) => {
+                const id = `assets|${sub.title}|line|${item.name}`
+                return <LineItemRow key={item.name} item={item} rowId={id} review={reviewFor(id)} onUpdateReview={updateReview} />
+              })}
+              <SummaryRow item={sub.total} rowId={`assets|${sub.title}|subtotal|${sub.total.name}`} review={reviewFor(`assets|${sub.title}|subtotal|${sub.total.name}`)} onUpdateReview={updateReview} />
             </Fragment>
           ))}
-          <TotalRow item={data.assets.total} />
+          <TotalRow item={data.assets.total} rowId={`assets|total|${data.assets.total.name}`} review={reviewFor(`assets|total|${data.assets.total.name}`)} onUpdateReview={updateReview} />
 
           {/* LIABILITIES */}
           <SectionHeader title="Liabilities" />
           {data.liabilities.subsections.map((sub) => (
             <Fragment key={sub.title}>
               <SubsectionHeader title={sub.title} />
-              {sub.items.map((item) => <LineItemRow key={item.name} item={item} />)}
-              <SummaryRow item={sub.total} />
+              {sub.items.map((item) => {
+                const id = `liabilities|${sub.title}|line|${item.name}`
+                return <LineItemRow key={item.name} item={item} rowId={id} review={reviewFor(id)} onUpdateReview={updateReview} />
+              })}
+              <SummaryRow item={sub.total} rowId={`liabilities|${sub.title}|subtotal|${sub.total.name}`} review={reviewFor(`liabilities|${sub.title}|subtotal|${sub.total.name}`)} onUpdateReview={updateReview} />
             </Fragment>
           ))}
-          <TotalRow item={data.liabilities.total} />
+          <TotalRow item={data.liabilities.total} rowId={`liabilities|total|${data.liabilities.total.name}`} review={reviewFor(`liabilities|total|${data.liabilities.total.name}`)} onUpdateReview={updateReview} />
 
           {/* NET ASSETS */}
-          <TotalRow item={data.netAssets} className="border-t-2 border-slate-400 bg-slate-50" />
+          <TotalRow item={data.netAssets} rowId={`net-assets|${data.netAssets.name}`} review={reviewFor(`net-assets|${data.netAssets.name}`)} onUpdateReview={updateReview} className="border-t-2 border-slate-400 bg-slate-50" />
 
           {/* EQUITY */}
           <SectionHeader title="Equity" />
-          {data.equity.items.map((item) => <LineItemRow key={item.name} item={item} />)}
-          <TotalRow item={data.equity.total} />
+          {data.equity.items.map((item) => {
+            const id = `equity|line|${item.name}`
+            return <LineItemRow key={item.name} item={item} rowId={id} review={reviewFor(id)} onUpdateReview={updateReview} />
+          })}
+          <TotalRow item={data.equity.total} rowId={`equity|total|${data.equity.total.name}`} review={reviewFor(`equity|total|${data.equity.total.name}`)} onUpdateReview={updateReview} />
         </tbody>
       </table>
     </div>

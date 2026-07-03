@@ -198,7 +198,7 @@ export function FloatingAssistant() {
     setStatus('Generating')
 
     const draft = localDraft(trimmed)
-    setAnswer(`Local draft:\n\n${draft}`)
+    setAnswer('Generating answer...')
 
     try {
       const apiKey = typeof window === 'undefined' ? '' : sessionStorage.getItem('qfr_openai_api_key') || ''
@@ -220,11 +220,11 @@ export function FloatingAssistant() {
       }
 
       const payload = (await response.json()) as { answer?: string }
-      setAnswer(`${payload.answer || draft}\n\n---\nLocal draft:\n${draft}`)
+      setAnswer(payload.answer || 'No answer was returned.')
       setStatus('Done')
     } catch (error) {
-      setAnswer(`${draft}\n\n[LLM unavailable] ${error instanceof Error ? error.message : String(error)}`)
-      setStatus('Local result shown')
+      setAnswer(`AI response unavailable. ${error instanceof Error ? error.message : String(error)}`)
+      setStatus('AI unavailable')
     } finally {
       setIsThinking(false)
     }
