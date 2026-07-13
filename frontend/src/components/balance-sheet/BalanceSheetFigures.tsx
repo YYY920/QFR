@@ -41,7 +41,7 @@ export function BalanceSheetFigures({ data }: { data: BalanceSheetData }) {
     name: section.title,
     assets: section.total.current,
     liabilities: data.liabilities.subsections[index]?.total.current ?? 0,
-    net: section.total.current - (data.liabilities.subsections[index]?.total.current ?? 0),
+    net: section.total.current + (data.liabilities.subsections[index]?.total.current ?? 0),
   }))
 
   return (
@@ -81,7 +81,7 @@ export function BalanceSheetFigures({ data }: { data: BalanceSheetData }) {
         </ResponsiveContainer>
       </FigureCard>
 
-      <FigureCard title="Working Capital Bridge" description="Current assets less current liabilities by visible section.">
+      <FigureCard title="Working Capital Bridge" description="Current assets plus liabilities, with liabilities shown as negative.">
         <ResponsiveContainer width="100%" height={320}>
           <BarChart data={workingCapital} margin={{ left: 8, right: 8, top: 8, bottom: 8 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />

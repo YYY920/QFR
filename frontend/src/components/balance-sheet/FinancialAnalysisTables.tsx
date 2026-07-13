@@ -1,4 +1,4 @@
-import { Activity, AlertTriangle, BarChart3 } from 'lucide-react'
+import { Activity, BarChart3, Info } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -55,7 +55,7 @@ export function FinancialAnalysisTables({ data }: { data: BalanceSheetData }) {
   const totalEquity = data.equity.total.current
   const currentAssets = data.assets.subsections.reduce((sum, section) => sum + section.total.current, 0)
   const currentLiabilities = data.liabilities.subsections.reduce((sum, section) => sum + section.total.current, 0)
-  const workingCapital = currentAssets - currentLiabilities
+  const workingCapital = currentAssets + currentLiabilities
 
   const ratios = [
     {
@@ -69,7 +69,7 @@ export function FinancialAnalysisTables({ data }: { data: BalanceSheetData }) {
       metric: 'Working Capital',
       value: fmtAUD(workingCapital),
       benchmark: 'Positive preferred',
-      comment: 'Current assets less current liabilities, using displayed report values.',
+      comment: 'Current assets plus displayed liabilities, where liabilities are presented as negative balances.',
       tone: workingCapital >= 0 ? 'good' : 'risk',
     },
     {
@@ -84,7 +84,7 @@ export function FinancialAnalysisTables({ data }: { data: BalanceSheetData }) {
       value: fmtRatio(divide(Math.abs(totalLiabilities), Math.abs(totalEquity))),
       benchmark: '< 1.00x',
       comment: 'Highlights leverage against equity. Negative equity should be reviewed.',
-      tone: totalEquity >= 0 && Math.abs(totalLiabilities) <= Math.abs(totalEquity) ? 'good' : 'risk',
+      tone: totalEquity >= 0 && Math.abs(totalLiabilities) <= totalEquity ? 'good' : 'risk',
     },
   ] as const
 
@@ -175,9 +175,9 @@ export function FinancialAnalysisTables({ data }: { data: BalanceSheetData }) {
               ))}
             </TableBody>
           </Table>
-          <div className="mt-3 flex gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-            <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
-            Negative balances are shown as reported. Review sign conventions before treating ratios as final advice.
+          <div className="mt-3 flex gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-800">
+            <Info className="mt-0.5 size-3.5 shrink-0" />
+            Presentation convention: assets and equity are positive; liabilities are negative.
           </div>
         </CardContent>
       </Card>

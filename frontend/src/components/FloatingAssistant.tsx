@@ -91,7 +91,7 @@ function balanceSheetDraft(): string {
   const liabilities = BALANCE_SHEET_DATA.liabilities.total.current
   const equity = BALANCE_SHEET_DATA.equity.total.current
   const workingCapital = BALANCE_SHEET_DATA.assets.subsections.reduce((sum, section) => sum + section.total.current, 0)
-    - BALANCE_SHEET_DATA.liabilities.subsections.reduce((sum, section) => sum + section.total.current, 0)
+    + BALANCE_SHEET_DATA.liabilities.subsections.reduce((sum, section) => sum + section.total.current, 0)
   const currentRatio = Math.abs(liabilities) === 0 ? null : Math.abs(assets) / Math.abs(liabilities)
 
   return [
@@ -102,8 +102,8 @@ function balanceSheetDraft(): string {
     `Current ratio: ${currentRatio === null ? 'n/a' : `${currentRatio.toFixed(2)}x`}`,
     '',
     'Initial view:',
-    '- Negative assets/equity should be reviewed against Xero sign conventions.',
-    '- Liability coverage appears manageable on an absolute-value basis, but the bank balance is negative.',
+    '- Presentation convention: assets and equity are positive; liabilities are negative.',
+    '- Working capital is calculated as current assets plus displayed current liabilities.',
   ].join('\n')
 }
 
