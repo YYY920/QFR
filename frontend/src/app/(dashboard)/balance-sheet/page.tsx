@@ -7,6 +7,8 @@ import { SummaryCards } from '@/components/balance-sheet/SummaryCards'
 import { BalanceTable } from '@/components/balance-sheet/BalanceTable'
 import { FinancialAnalysisTables } from '@/components/balance-sheet/FinancialAnalysisTables'
 import { BalanceSheetFigures } from '@/components/balance-sheet/BalanceSheetFigures'
+import { CashPosition } from '@/components/balance-sheet/CashPosition'
+import { AgingAnalysis } from '@/components/balance-sheet/AgingAnalysis'
 
 export default function BalanceSheetPage() {
   const [filters, setFilters] = useState<BSFilterState>(defaultBSFilters)
@@ -27,9 +29,11 @@ export default function BalanceSheetPage() {
           onChange={setFilters}
           onReset={() => setFilters(defaultBSFilters())}
         />
+        <CashPosition />
         <SummaryCards data={data} />
         <BalanceSheetFigures data={data} />
         <FinancialAnalysisTables data={data} />
+        <AgingAnalysis />
         <BalanceTable data={data} />
       </div>
     </main>
