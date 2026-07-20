@@ -5,6 +5,7 @@ import os
 import queue
 import re
 import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, TypeVar
@@ -27,6 +28,7 @@ from xero.accounts import get_accounts
 from xero.journals import get_manual_journals
 from xero.general_journals import get_journals
 from xero.finance import get_financial_statement_balance_sheet
+from ai.mapping_validation import rejected_mapping, validate_mapping_result
 from ai.openai_mapper import map_description
 
 
@@ -116,7 +118,23 @@ def _write_json_cache(filename: str, payload: Dict[str, Any]) -> None:
     (OUTPUT_DIR / filename).write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
+def _env_int(name: str, default: int) -> int:
+    try:
+        return int(os.environ.get(name, str(default)))
+    except ValueError:
+        return default
+
+
+def _env_float(name: str, default: float) -> float:
+    try:
+        return float(os.environ.get(name, str(default)))
+    except ValueError:
+        return default
+
+
 def parse_args() -> argparse.Namespace:
+    # Ensure CLI defaults can be configured from the project .env file.
+    load_settings()
     parser = argparse.ArgumentParser(description="Run QFR Xero mapping MVP.")
     parser.add_argument("--from-date", dest="from_date", help="YYYY-MM-DD")
     parser.add_argument("--to-date", dest="to_date", help="YYYY-MM-DD")
@@ -124,7 +142,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--max-pages",
         type=int,
-        default=int(os.environ.get("XERO_MAX_PAGES", "50")),
+        default=_env_int("XERO_MAX_PAGES", 50),
         help="Max pages to fetch per invoice type (default: 50 or XERO_MAX_PAGES).",
     )
     parser.add_argument(
@@ -162,7 +180,24 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Request Xero Profit & Loss report in payments-only mode.",
     )
-    return parser.parse_args()
+    parser.add_argument(
+        "--mapping-workers",
+        type=int,
+        default=_env_int("AI_MAPPING_WORKERS", 4),
+        help="Concurrent AI mapping workers (default: 4 or AI_MAPPING_WORKERS; max: 32).",
+    )
+    parser.add_argument(
+        "--ai-timeout",
+        type=float,
+        default=_env_float("OPENAI_TIMEOUT_SECONDS", 30.0),
+        help="OpenAI request timeout in seconds (default: 30; valid range: 1-120).",
+    )
+    args = parser.parse_args()
+    if not 1 <= args.mapping_workers <= 32:
+        parser.error("--mapping-workers must be between 1 and 32.")
+    if not 1.0 <= args.ai_timeout <= 120.0:
+        parser.error("--ai-timeout must be between 1 and 120 seconds.")
+    return args
 
 
 def _parse_iso_date(value: str) -> date:
@@ -561,18 +596,26 @@ def prepare_category_lists() -> Dict[str, Any]:
         for c in categories
         if c.get("name")
     ]
-    allowed_names = [c["name"] for c in payload] + [fallback]
-    income_payload = [c for c in payload if c.get("type") in {"income", "other_income"}]
+    fallback_item = {
+        "name": fallback,
+        "type": "fallback",
+        "description": "Use only when no configured reporting category can be selected safely.",
+    }
+    allowed_payload = payload + ([] if fallback in {c["name"] for c in payload} else [fallback_item])
+    allowed_names = [c["name"] for c in allowed_payload]
+    income_payload = [c for c in payload if c.get("type") in {"income", "other_income"}] + [fallback_item]
     income_names = [c["name"] for c in income_payload]
+    income_names = [name for name in income_names if name != fallback]
     payroll_payload = [c for c in payload if c.get("type") == "payroll"]
     payroll_names = [c["name"] for c in payroll_payload]
 
     if not payroll_names and "Wages and Salaries" in allowed_names:
         payroll_names = ["Wages and Salaries"]
         payroll_payload = [c for c in payload if c["name"] == "Wages and Salaries"]
+    payroll_payload = payroll_payload + [fallback_item]
 
     return {
-        "allowed_payload": payload,
+        "allowed_payload": allowed_payload,
         "allowed_names": allowed_names,
         "income_payload": income_payload,
         "income_names": income_names,
@@ -4286,6 +4329,116 @@ def _write_report_assistant_html(output_path: Path) -> None:
     output_path.write_text(html_content, encoding="utf-8")
 
 
+def _allowed_categories_for_row(
+    row: Dict[str, Any],
+    category_defs: Dict[str, Any],
+) -> List[Dict[str, Any]]:
+    account_code = str(row.get("AccountCode") or "").strip()
+    tx_type = row.get("Type")
+    if tx_type == "Payroll":
+        return category_defs["payroll_payload"] or category_defs["allowed_payload"]
+    if account_code.startswith("2"):
+        return category_defs["income_payload"] or category_defs["allowed_payload"]
+    return category_defs["allowed_payload"]
+
+
+def _map_profit_loss_row(
+    row: Dict[str, Any],
+    category_defs: Dict[str, Any],
+    request_timeout_seconds: float,
+) -> tuple[Dict[str, Any], Dict[str, Any]]:
+    working_row = dict(row)
+    allowed = _allowed_categories_for_row(working_row, category_defs)
+    account_code = str(working_row.get("AccountCode") or "").strip()
+    account_name = str(working_row.get("AccountName") or "")
+    tx_type = working_row.get("Type")
+
+    try:
+        mapped = _apply_rule_first_mapping(working_row, category_defs["fallback"])
+        if mapped is None:
+            mapped = map_description(
+                contact=str(working_row.get("Contact") or ""),
+                description=str(working_row.get("Description") or ""),
+                amount=_safe_float(working_row.get("Amount")),
+                allowed_categories=allowed,
+                account_code=account_code,
+                account_name=account_name,
+                tx_type=str(tx_type or ""),
+                request_timeout_seconds=request_timeout_seconds,
+            )
+        mapped = _apply_post_mapping_policy_guards(
+            working_row,
+            mapped,
+            category_defs["fallback"],
+        )
+        mapped, _ = validate_mapping_result(mapped, allowed)
+    except Exception as exc:  # noqa: BLE001
+        mapped = rejected_mapping(
+            f"Mapping runtime error: {exc}",
+            "MAPPING_RUNTIME_ERROR",
+        )
+
+    mapped_row = {
+        **working_row,
+        "MappedCategory": mapped["category"],
+        "Confidence": mapped["confidence"],
+        "Reason": mapped["reason"],
+        "RuleID": mapped.get("rule_id"),
+    }
+    return mapped_row, mapped
+
+
+def _map_profit_loss_rows(
+    rows: List[Dict[str, Any]],
+    category_defs: Dict[str, Any],
+    worker_count: int,
+    request_timeout_seconds: float,
+    progress_path: Path,
+    progress_json_path: Path,
+    write_progress: bool,
+) -> List[Dict[str, Any]]:
+    if not rows:
+        return []
+
+    effective_workers = min(worker_count, len(rows))
+    print(
+        f"Mapping P&L lines with {effective_workers} worker(s); "
+        f"OpenAI timeout {request_timeout_seconds:g}s."
+    )
+    mapped_rows: List[Dict[str, Any]] = [{} for _ in rows]
+    with ThreadPoolExecutor(max_workers=effective_workers, thread_name_prefix="qfr-map") as executor:
+        future_to_index = {
+            executor.submit(
+                _map_profit_loss_row,
+                row,
+                category_defs,
+                request_timeout_seconds,
+            ): index
+            for index, row in enumerate(rows)
+        }
+        for completed, future in enumerate(as_completed(future_to_index), start=1):
+            source_index = future_to_index[future]
+            mapped_row, mapped = future.result()
+            mapped_rows[source_index] = mapped_row
+            if write_progress:
+                _write_progress_json(
+                    progress_json_path,
+                    completed,
+                    len(rows),
+                    mapped_row,
+                    mapped,
+                )
+                _write_progress_html(
+                    progress_path,
+                    completed,
+                    len(rows),
+                    mapped_row,
+                    mapped,
+                    json_filename="progress.json",
+                )
+    return mapped_rows
+
+
 def main() -> None:
     args = parse_args()
     ensure_output_dir()
@@ -4743,49 +4896,17 @@ def main() -> None:
     )
 
     category_defs = prepare_category_lists()
-    mapped_rows: List[Dict[str, Any]] = []
     progress_path = OUTPUT_DIR / "progress.html"
     progress_json_path = OUTPUT_DIR / "progress.json"
-    total_rows = len(all_rows)
-    # progress.html is updated per-row so local file:// reloads pick up new data
-
-    for index, row in enumerate(all_rows, start=1):
-        account_code = str(row.get("AccountCode") or "").strip()
-        account_name = row.get("AccountName") or ""
-        tx_type = row.get("Type")
-
-        if tx_type == "Payroll":
-            allowed = category_defs["payroll_payload"] or category_defs["allowed_payload"]
-        elif account_code.startswith("2"):
-            allowed = category_defs["income_payload"] or category_defs["allowed_payload"]
-        else:
-            allowed = category_defs["allowed_payload"]
-
-        mapped = _apply_rule_first_mapping(row, category_defs["fallback"])
-        if mapped is None:
-            mapped = map_description(
-                contact=row["Contact"],
-                description=row["Description"],
-                amount=row["Amount"],
-                allowed_categories=allowed,
-                account_code=account_code,
-                account_name=account_name,
-                tx_type=tx_type,
-            )
-        mapped = _apply_post_mapping_policy_guards(row, mapped, category_defs["fallback"])
-        mapped_rows.append(
-            {
-                **row,
-                "MappedCategory": mapped.get("category"),
-                "Confidence": mapped.get("confidence"),
-                "Reason": mapped.get("reason"),
-                "RuleID": mapped.get("rule_id"),
-            }
-        )
-
-        if not args.no_progress:
-            _write_progress_json(progress_json_path, index, total_rows, row, mapped)
-            _write_progress_html(progress_path, index, total_rows, row, mapped, json_filename="progress.json")
+    mapped_rows = _map_profit_loss_rows(
+        all_rows,
+        category_defs,
+        worker_count=args.mapping_workers,
+        request_timeout_seconds=args.ai_timeout,
+        progress_path=progress_path,
+        progress_json_path=progress_json_path,
+        write_progress=not args.no_progress,
+    )
 
     df = pd.DataFrame(mapped_rows)
     df = _apply_category_normalization(df, category_defs["allowed_names"])

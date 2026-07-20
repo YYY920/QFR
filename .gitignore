@@ -5,6 +5,7 @@ output/
 .env
 xero_token.json
 mapping_memory.json
+mapping_memory.json.lock
 
 # Python
 .venv/

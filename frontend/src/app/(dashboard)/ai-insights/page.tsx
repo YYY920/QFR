@@ -1,6 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { ArrowRight, BarChart3, Scale, Sparkles } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 // ── Data — interleaved income/expense for visual variety ─────────────────────
 const TRANSACTIONS = [
@@ -31,9 +33,36 @@ function sr(seed: number): number {
   return s - Math.floor(s)
 }
 
-// ── State machine ─────────────────────────────────────────────────────────────
+// ── Report generation ─────────────────────────────────────────────────────────
+type ReportTarget = 'profit-loss' | 'balance-sheet'
 type Phase = 'scanning' | 'classified' | 'done'
-const DELAY: Record<Phase, number> = { scanning: 1600, classified: 1100, done: 3200 }
+
+const REPORTS: Record<ReportTarget, {
+  title: string
+  description: string
+  href: string
+  icon: typeof BarChart3
+  accent: string
+}> = {
+  'profit-loss': {
+    title: 'Profit & Loss',
+    description: 'Generate a performance report covering revenue, expenses and net profit.',
+    href: '/profit-loss',
+    icon: BarChart3,
+    accent: 'emerald',
+  },
+  'balance-sheet': {
+    title: 'Balance Sheet',
+    description: 'Generate a position report covering assets, liabilities and equity.',
+    href: '/balance-sheet',
+    icon: Scale,
+    accent: 'violet',
+  },
+}
+
+const CLASSIFY_DELAY_MS = 650
+const PROGRESS_INTERVAL_MS = 1000
+const REDIRECT_DELAY_MS = 800
 
 // ── SVG constants ─────────────────────────────────────────────────────────────
 const OX = 500   // orb centre X
@@ -101,29 +130,115 @@ function makeParticles(txIdx: number, income: boolean, count = 10): Particle[] {
 
 // ── Component ────────────────────────────────────────────────────────────────
 export default function AIInsightsPage() {
+  const router = useRouter()
+  const [reportTarget, setReportTarget] = useState<ReportTarget | null>(null)
   const [phase,    setPhase]    = useState<Phase>('scanning')
   const [txIdx,    setTxIdx]    = useState(0)
   const [litCount, setLitCount] = useState(0)
-  const progressRef             = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      if (phase === 'scanning') {
-        setLitCount(c => c + 1)
-        setPhase('classified')
-      } else if (phase === 'classified') {
-        if (txIdx >= TRANSACTIONS.length - 1) setPhase('done')
-        else { setTxIdx(i => i + 1); setPhase('scanning') }
-      } else {
-        setLitCount(0); setTxIdx(0); setPhase('scanning')
-      }
-    }, DELAY[phase])
-    return () => clearTimeout(t)
-  }, [phase, txIdx])
+    if (!reportTarget || litCount >= TRANSACTIONS.length) return
+
+    const classifyTimer = window.setTimeout(() => {
+      setPhase('classified')
+    }, CLASSIFY_DELAY_MS)
+
+    const progressTimer = window.setTimeout(() => {
+      const nextCount = Math.min(litCount + 2, TRANSACTIONS.length)
+      setLitCount(nextCount)
+      setTxIdx(Math.max(0, nextCount - 1))
+      setPhase(nextCount === TRANSACTIONS.length ? 'done' : 'scanning')
+    }, PROGRESS_INTERVAL_MS)
+
+    return () => {
+      window.clearTimeout(classifyTimer)
+      window.clearTimeout(progressTimer)
+    }
+  }, [litCount, reportTarget])
 
   useEffect(() => {
-    progressRef.current?.style.setProperty('--pw', `${(litCount / TRANSACTIONS.length) * 100}%`)
-  }, [litCount])
+    if (!reportTarget || phase !== 'done') return
+
+    const redirectTimer = window.setTimeout(() => {
+      router.push(REPORTS[reportTarget].href)
+    }, REDIRECT_DELAY_MS)
+
+    return () => window.clearTimeout(redirectTimer)
+  }, [phase, reportTarget, router])
+
+  function startGeneration(target: ReportTarget) {
+    setPhase('scanning')
+    setTxIdx(0)
+    setLitCount(0)
+    setReportTarget(target)
+  }
+
+  if (!reportTarget) {
+    return (
+      <div className="relative flex h-full items-center justify-center overflow-hidden bg-[#03060f] px-6 py-10 text-white">
+        <div
+          className="absolute inset-0 opacity-70"
+          style={{
+            backgroundImage: [
+              'radial-gradient(circle at 50% 28%, rgba(91, 33, 182, 0.3), transparent 36%)',
+              'linear-gradient(rgba(26, 46, 80, 0.22) 1px, transparent 1px)',
+              'linear-gradient(90deg, rgba(26, 46, 80, 0.22) 1px, transparent 1px)',
+            ].join(', '),
+            backgroundSize: 'auto, 48px 48px, 48px 48px',
+          }}
+        />
+
+        <div className="relative z-10 w-full max-w-3xl">
+          <div className="mb-10 text-center">
+            <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-2xl border border-violet-400/25 bg-violet-500/10 text-violet-300 shadow-[0_0_45px_rgba(124,58,237,0.22)]">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-violet-300/80">AI Insights</p>
+            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Choose a report to generate</h1>
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-400">
+              Select the financial report you want to prepare. We&apos;ll simulate the analysis and open the completed report automatically.
+            </p>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            {(Object.entries(REPORTS) as [ReportTarget, (typeof REPORTS)[ReportTarget]][]).map(([key, report]) => {
+              const Icon = report.icon
+              const isEmerald = report.accent === 'emerald'
+
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => startGeneration(key)}
+                  className={`group rounded-2xl border bg-slate-950/70 p-6 text-left backdrop-blur-md transition duration-200 hover:-translate-y-0.5 hover:bg-slate-900/80 focus-visible:outline-none focus-visible:ring-2 ${
+                    isEmerald
+                      ? 'border-emerald-400/20 hover:border-emerald-400/45 focus-visible:ring-emerald-400'
+                      : 'border-violet-400/20 hover:border-violet-400/45 focus-visible:ring-violet-400'
+                  }`}
+                >
+                  <div className={`mb-8 flex h-11 w-11 items-center justify-center rounded-xl border ${
+                    isEmerald
+                      ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300'
+                      : 'border-violet-400/20 bg-violet-400/10 text-violet-300'
+                  }`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h2 className="text-lg font-semibold">{report.title}</h2>
+                  <p className="mt-2 min-h-12 text-sm leading-6 text-slate-400">{report.description}</p>
+                  <span className={`mt-6 inline-flex items-center gap-2 text-sm font-medium ${
+                    isEmerald ? 'text-emerald-300' : 'text-violet-300'
+                  }`}>
+                    Generate report
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const tx         = TRANSACTIONS[txIdx]
   const particles  = makeParticles(txIdx, tx.income)
@@ -133,6 +248,8 @@ export default function AIInsightsPage() {
   const categories = Array.from(new Set(processed.map(t => t.category)))
   const burstColor = tx.income ? '#34d399' : '#a78bfa'
   const scanning   = phase === 'scanning'
+  const report     = REPORTS[reportTarget]
+  const progress   = Math.round((litCount / TRANSACTIONS.length) * 100)
 
   return (
     <div className="relative flex h-full flex-col bg-[#03060f] text-white overflow-hidden">
@@ -143,7 +260,6 @@ export default function AIInsightsPage() {
         .fade-in-up  { animation: fade-in-up .4s ease both; }
         .count-anim  { animation: count-up   .3s ease both; }
         .pulse-soft  { animation: pulse-soft 1.8s ease-in-out infinite; }
-        .progress-fill { width: var(--pw, 0%); }
       `}</style>
 
       {/* ── Full-screen SVG canvas ── */}
@@ -337,10 +453,10 @@ export default function AIInsightsPage() {
         <span className="text-sm font-semibold">AI Insights</span>
         <span className="text-slate-600">—</span>
         {phase === 'done' ? (
-          <span className="text-sm text-emerald-400">Analysis complete</span>
+          <span className="text-sm text-emerald-400">{report.title} ready — opening report…</span>
         ) : scanning ? (
           <span className="pulse-soft text-sm text-slate-400">
-            Analysing: <span className="text-white">{tx.contact}</span>
+            Generating {report.title}: <span className="text-white">{tx.contact}</span>
           </span>
         ) : (
           <span className="text-sm text-slate-400">
@@ -420,11 +536,14 @@ export default function AIInsightsPage() {
       {/* ── Progress footer ── */}
       <div className="relative z-10 border-t border-white/5 bg-black/40 px-8 py-3 backdrop-blur-md">
         <div className="mb-1.5 flex justify-between text-xs text-slate-600">
-          <span>Analysis progress</span>
-          <span>{Math.round((litCount / TRANSACTIONS.length) * 100)}%</span>
+          <span>Generating {report.title} · 2 records per second</span>
+          <span>{progress}%</span>
         </div>
         <div className="h-px overflow-hidden rounded-full bg-white/5">
-          <div ref={progressRef} className="progress-fill h-full rounded-full bg-violet-500 transition-all duration-700 ease-out"/>
+          <div
+            className="h-full rounded-full bg-violet-500 transition-[width] duration-700 ease-out"
+            style={{ width: `${progress}%` }}
+          />
         </div>
       </div>
     </div>

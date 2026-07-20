@@ -1,11 +1,17 @@
 import json
 import os
+from hashlib import sha256
 from typing import Any, Dict, List
 
 from google import genai
 
 from ai.prompts import MAPPING_PROMPT
 from ai.memory_store import lookup_mapping, store_mapping
+from ai.mapping_validation import rejected_mapping, validate_mapping_result
+
+
+MODEL_NAME = "gemini-2.5-flash"
+MAPPING_POLICY_VERSION = "qfr-gemini-v2"
 
 
 def _get_client() -> "genai.Client":
@@ -24,10 +30,22 @@ def map_description(
     account_name: str | None = None,
     tx_type: str | None = None,
 ) -> Dict[str, Any]:
-    # 1) Try memory/cache first
-    cached = lookup_mapping(contact, description)
+    taxonomy_json = json.dumps(allowed_categories, sort_keys=True, separators=(",", ":"), default=str)
+    cache_context = {
+        "mapper": MAPPING_POLICY_VERSION,
+        "model": MODEL_NAME,
+        "amount": float(amount),
+        "account_code": (account_code or "").strip(),
+        "account_name": (account_name or "").strip(),
+        "tx_type": (tx_type or "").strip(),
+        "taxonomy_sha256": sha256(taxonomy_json.encode("utf-8")).hexdigest(),
+    }
+
+    cached = lookup_mapping(contact, description, context=cache_context)
     if cached:
-        return cached
+        validated_cached, is_valid = validate_mapping_result(cached, allowed_categories)
+        if is_valid:
+            return validated_cached
 
     client = _get_client()
     prompt = MAPPING_PROMPT.format(
@@ -41,28 +59,22 @@ def map_description(
     )
 
     resp = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model=MODEL_NAME,
         contents=prompt,
     )
     text = (resp.text or "").strip()
 
-    result: Dict[str, Any]
     try:
-        result = json.loads(text)
+        candidate = json.loads(text)
     except json.JSONDecodeError:
-        # Fallback structure
-        result = {
-            "category": "Unmapped",
-            "confidence": 0.0,
-            "reason": "Failed to parse JSON from model output.",
-            "raw": text,
-        }
+        return rejected_mapping(
+            "Rejected Gemini output: failed to parse a JSON object.",
+            "VALIDATION_JSON_PARSE_FAILED",
+        )
 
-    # Ensure minimal structure
-    result.setdefault("category", "Unmapped")
-    result.setdefault("confidence", 0.0)
-    result.setdefault("reason", "No reason provided.")
+    result, is_valid = validate_mapping_result(candidate, allowed_categories)
+    if not is_valid:
+        return result
 
-    # Store into memory for next time
-    store_mapping(contact, description, result)
+    store_mapping(contact, description, result, context=cache_context)
     return result

@@ -37,11 +37,18 @@ The backend converts Xero transaction evidence into line-level records with:
 The mapping business rule is:
 
 1. Use deterministic patch rules where known accounting policies exist.
-2. Check local mapping memory for repeated contact/description pairs.
+2. Check versioned local mapping memory using contact, description, amount,
+   account, transaction type, model, and taxonomy context.
 3. Ask OpenAI for a category suggestion when no deterministic result exists.
-4. Restrict AI output to predefined categories from `category_definitions.json`.
-5. Fall back to account-name matching or `Unmapped` if the model/API is unavailable.
-6. Flag low-confidence mappings for review.
+4. Strictly validate category, confidence, and reason; reject invalid model
+   output to `Unmapped` with an audit RuleID.
+5. Apply post-mapping policy guards.
+6. Fall back to account-name matching or `Unmapped` if the model/API is unavailable.
+7. Flag low-confidence mappings for review.
+
+Mapping is performed with bounded concurrency. The default is four workers and
+a 30-second per-request timeout; both are configurable through CLI flags or
+environment variables.
 
 Current categories include items such as `Sales`, `Advertising`, `Office Expenses`, `Rent`, `Subscriptions`, `Wages and Salaries`, and `Unmapped`.
 
@@ -142,10 +149,15 @@ The `ai/` package contains:
 
 - `gemini_mapper.py`
   - Still present, but current `run_mvp.py` imports the OpenAI mapper.
-  - README is partially stale because it still describes Gemini as the primary mapping engine.
+  - Optional/legacy path; it now shares the strict output validator and cache schema.
 
 - `memory_store.py`
-  - Provides simple local mapping memory to reuse prior contact/description mappings.
+  - Uses a versioned, context-aware cache schema.
+  - Migrates legacy entries for audit without reusing contextless results.
+  - Uses thread/process locking and atomic replacement for concurrent writes.
+
+- `mapping_validation.py`
+  - Enforces the model output contract and produces deterministic rejection RuleIDs.
 
 - `prompts.py`
   - Holds the mapping prompt template and category constraints.
@@ -259,7 +271,9 @@ mock report data
 - Xero P&L and Balance Sheet report pulling.
 - Transaction evidence pulling for bills, invoices, payments, credit notes, bank activity, journals, accounts, and optional payroll.
 - OpenAI-based mapping into constrained QFR categories.
-- Local memory reuse for repeated mappings.
+- Strict category/confidence/reason validation with hard rejection to `Unmapped`.
+- Context-aware, versioned, atomically written mapping memory.
+- Bounded concurrent mapping with configurable worker count and timeout.
 - Deterministic patch/policy rules for known edge cases.
 - Confidence scores, reasons, and rule IDs.
 - Excel/CSV outputs for mapping reports and summaries.
@@ -301,6 +315,7 @@ mock report data
 ```bash
 python login_xero.py
 python run_mvp.py --use-cache --no-progress
+python -m unittest -v test_ai_mapping.py
 python test_mapping_consistency.py
 python test_openai.py
 ```
@@ -353,19 +368,18 @@ For the transferred GitHub ownership/new Vercel account setup:
 - The frontend currently uses mock data rather than live backend output.
 - Login is temporary and hardcoded.
 - The browser-session API key is convenient for demos but should be replaced by a proper secure backend secret model for production.
-- README still references Gemini as the main mapper, but current backend mapping uses OpenAI.
 - Balance Sheet signs require accounting validation before ratios are treated as final advice.
 - Payroll access may be unavailable depending on Xero tenant authorization.
 - Formal ACFR import-template generation and tracking/category dictionaries are not fully implemented.
 - Human review workflow exists as output/reporting logic, but not yet as a full interactive approval workflow.
-- Mapping governance needs stronger rule ownership, versioning, and audit controls before production use.
+- Mapping cache and validation are versioned, but broader rule ownership and
+  approval governance are still required before production use.
 
 ## 10. Near-Term Next Steps
 
 1. Wire frontend dashboards to generated backend JSON instead of mock data.
-2. Update README and `.env.example` to reflect OpenAI keys and current frontend commands.
-3. Replace hardcoded login with real auth.
-4. Move API key handling fully server-side for production.
-5. Add deploy documentation or `vercel.json` if the project needs repo-controlled deployment behavior.
-6. Expand Balance Sheet data coverage beyond the current mock dataset.
-7. Add a human review UI for low-confidence mapping approvals.
+2. Replace hardcoded login with real auth.
+3. Move API key handling fully server-side for production.
+4. Add deploy documentation or `vercel.json` if the project needs repo-controlled deployment behavior.
+5. Expand Balance Sheet data coverage beyond the current mock dataset.
+6. Add a human review UI for low-confidence mapping approvals.
