@@ -77,8 +77,37 @@ export function BalanceSheetFilterPanel({ filters, allAccounts, onChange, onRese
     <Card>
       <CardContent className="flex flex-wrap items-end gap-4 pt-4">
         <div className="flex flex-col gap-1">
+          <Label htmlFor="bs-start" className="text-xs text-muted-foreground">Start date</Label>
+          <Input
+            id="bs-start"
+            type="date"
+            value={filters.startDate}
+            onChange={(e) => set({ startDate: e.target.value })}
+            className="w-40"
+          />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <Label htmlFor="bs-end" className="text-xs text-muted-foreground">End date</Label>
+          <Input
+            id="bs-end"
+            type="date"
+            value={filters.endDate}
+            onChange={(e) => set({ endDate: e.target.value })}
+            className="w-40"
+          />
+        </div>
+
+        <div className="flex flex-col gap-1">
           <Label htmlFor="bs-search" className="text-xs text-muted-foreground">Search</Label>
-          <Input id="bs-search" type="text" placeholder="Account name" value={filters.search} onChange={(e) => set({ search: e.target.value })} className="w-56" />
+          <Input
+            id="bs-search"
+            type="text"
+            placeholder="Account name"
+            value={filters.search}
+            onChange={(e) => set({ search: e.target.value })}
+            className="w-56"
+          />
         </div>
 
         <div className="flex flex-col gap-2">

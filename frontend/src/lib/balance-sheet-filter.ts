@@ -3,6 +3,8 @@ import type { BalanceSheetData, BSSection, BSLineItem } from './balance-sheet-mo
 export type BSFilterState = {
   search: string
   showAssets: boolean
+  startDate: string
+  endDate: string
   showLiabilities: boolean
   showEquity: boolean
   selectedAccounts: Set<string>   // empty = all accounts
@@ -11,6 +13,8 @@ export type BSFilterState = {
 export function defaultBSFilters(): BSFilterState {
   return {
     search: '',
+    startDate: '2025-01-01',
+    endDate: '2025-12-31',
     showAssets: true,
     showLiabilities: true,
     showEquity: true,

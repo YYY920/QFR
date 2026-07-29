@@ -37,7 +37,7 @@ export default function ProfitLossPage() {
   return (
     <main className="mx-auto max-w-7xl px-4 py-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">AI Mapping Report</h1>
+        <h1 className="text-2xl font-bold">Profit and Loss Report</h1>
         <p className="text-sm text-muted-foreground">
           Generated from Xero P&amp;L and transaction mapping {REPORT_DATA.meta.report_from} to {REPORT_DATA.meta.report_to}
         </p>
