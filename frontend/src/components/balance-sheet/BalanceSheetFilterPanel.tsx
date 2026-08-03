@@ -8,59 +8,120 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import type { BSFilterState } from '@/lib/balance-sheet-filter'
+import type { BalanceSheetData } from '@/lib/balance-sheet-mock'
 
 type Props = {
   filters: BSFilterState
-  allAccounts: string[]
+  data: BalanceSheetData
   onChange: (f: BSFilterState) => void
   onReset: () => void
 }
 
-function AccountDropdown({ filters, allAccounts, onChange }: {
-  filters: BSFilterState
-  allAccounts: string[]
-  onChange: (f: BSFilterState) => void
-}) {
+type Sub = { title: string; items: string[] }
+type Group = { section: string; subs: Sub[]; allItems: string[] }
+
+function getGroups(data: BalanceSheetData): Group[] {
+  const mk = (section: string, subs: Sub[]): Group => ({
+    section,
+    subs,
+    allItems: subs.flatMap((s) => s.items),
+  })
+  return [
+    mk('Assets', data.assets.subsections.map((s) => ({ title: s.title, items: s.items.map((i) => i.name) }))),
+    mk('Liabilities', data.liabilities.subsections.map((s) => ({ title: s.title, items: s.items.map((i) => i.name) }))),
+    mk('Equity', [{ title: 'Equity', items: data.equity.items.map((i) => i.name) }]),
+  ]
+}
+
+function LineItemsDropdown({ filters, data, onChange }: { filters: BSFilterState; data: BalanceSheetData; onChange: (f: BSFilterState) => void }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const groups = getGroups(data)
+  const allItems = groups.flatMap((g) => g.allItems)
+  const selected = filters.selectedAccounts
 
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
+    function onDoc(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
     }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    document.addEventListener('mousedown', onDoc)
+    return () => document.removeEventListener('mousedown', onDoc)
   }, [])
 
-  function toggleAccount(account: string) {
-    const next = new Set(filters.selectedAccounts)
-    if (next.has(account)) { next.delete(account) } else { next.add(account) }
-    onChange({ ...filters, selectedAccounts: next })
+  const isChecked = (item: string) => selected.size === 0 || selected.has(item)
+
+  function apply(next: Set<string>) {
+    onChange({ ...filters, selectedAccounts: next.size === allItems.length ? new Set() : next })
   }
 
-  const count = filters.selectedAccounts.size
-  const label = count === 0 ? 'All accounts' : `${count} selected`
+  function toggleItem(item: string) {
+    const base = selected.size === 0 ? new Set(allItems) : new Set(selected)
+    if (base.has(item)) base.delete(item)
+    else base.add(item)
+    apply(base)
+  }
+
+  function groupState(items: string[]): boolean | 'indeterminate' {
+    const shown = items.filter(isChecked).length
+    if (shown === items.length) return true
+    if (shown === 0) return false
+    return 'indeterminate'
+  }
+
+  function toggleGroup(items: string[]) {
+    const base = selected.size === 0 ? new Set(allItems) : new Set(selected)
+    const allOn = items.every((i) => base.has(i))
+    if (allOn) items.forEach((i) => base.delete(i))
+    else items.forEach((i) => base.add(i))
+    apply(base)
+  }
+
+  const count = selected.size === 0 ? allItems.length : selected.size
+  const label = selected.size === 0 ? 'All line items' : `${count} selected`
 
   return (
     <div className="relative" ref={ref}>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm hover:bg-muted transition-colors"
+        className="flex items-center justify-between gap-2 h-9 min-w-44 rounded-lg border border-input bg-transparent px-3 text-sm hover:bg-muted transition-colors"
       >
         <span>{label}</span>
-        <ChevronDown className="size-3.5 text-muted-foreground" />
+        <ChevronDown className="size-4 text-muted-foreground" />
       </button>
       {open && (
-        <div className="absolute top-full left-0 mt-1 z-20 min-w-48 rounded-lg border bg-popover shadow-md p-1.5 flex flex-col gap-0.5 max-h-52 overflow-y-auto">
-          {allAccounts.map((account) => (
-            <label key={account} className="flex items-center gap-2 text-sm px-2 py-1 rounded hover:bg-muted cursor-pointer">
-              <Checkbox
-                checked={filters.selectedAccounts.has(account)}
-                onCheckedChange={() => toggleAccount(account)}
-              />
-              {account}
-            </label>
+        <div className="absolute top-full left-0 mt-1 z-30 w-72 rounded-lg border bg-popover shadow-lg p-2 flex flex-col gap-2 max-h-96 overflow-y-auto">
+          {groups.map((g) => (
+            <div key={g.section} className="flex flex-col gap-0.5">
+              <label className="flex items-center gap-2 text-sm font-semibold px-1.5 py-1 rounded hover:bg-muted cursor-pointer">
+                <Checkbox
+                  checked={groupState(g.allItems) === true}
+                  indeterminate={groupState(g.allItems) === 'indeterminate'}
+                  onCheckedChange={() => toggleGroup(g.allItems)}
+                />
+                {g.section}
+              </label>
+              {g.subs.map((sub) => (
+                <div key={sub.title} className="flex flex-col gap-0.5">
+                  {sub.title !== g.section && (
+                    <label className="flex items-center gap-2 text-xs font-medium text-muted-foreground pl-6 pr-1.5 py-0.5 rounded hover:bg-muted cursor-pointer">
+                      <Checkbox
+                        checked={groupState(sub.items) === true}
+                        indeterminate={groupState(sub.items) === 'indeterminate'}
+                        onCheckedChange={() => toggleGroup(sub.items)}
+                      />
+                      {sub.title}
+                    </label>
+                  )}
+                  {sub.items.map((item) => (
+                    <label key={item} className="flex items-center gap-2 text-sm pl-11 pr-1.5 py-0.5 rounded hover:bg-muted cursor-pointer">
+                      <Checkbox checked={isChecked(item)} onCheckedChange={() => toggleItem(item)} />
+                      {item}
+                    </label>
+                  ))}
+                </div>
+              ))}
+            </div>
           ))}
         </div>
       )}
@@ -68,7 +129,7 @@ function AccountDropdown({ filters, allAccounts, onChange }: {
   )
 }
 
-export function BalanceSheetFilterPanel({ filters, allAccounts, onChange, onReset }: Props) {
+export function BalanceSheetFilterPanel({ filters, data, onChange, onReset }: Props) {
   function set(partial: Partial<BSFilterState>) {
     onChange({ ...filters, ...partial })
   }
@@ -78,58 +139,20 @@ export function BalanceSheetFilterPanel({ filters, allAccounts, onChange, onRese
       <CardContent className="flex flex-wrap items-end gap-4 pt-4">
         <div className="flex flex-col gap-1">
           <Label htmlFor="bs-start" className="text-xs text-muted-foreground">Start date</Label>
-          <Input
-            id="bs-start"
-            type="date"
-            value={filters.startDate}
-            onChange={(e) => set({ startDate: e.target.value })}
-            className="w-40"
-          />
+          <Input id="bs-start" type="date" value={filters.startDate} onChange={(e) => set({ startDate: e.target.value })} className="w-40" />
         </div>
-
         <div className="flex flex-col gap-1">
           <Label htmlFor="bs-end" className="text-xs text-muted-foreground">End date</Label>
-          <Input
-            id="bs-end"
-            type="date"
-            value={filters.endDate}
-            onChange={(e) => set({ endDate: e.target.value })}
-            className="w-40"
-          />
+          <Input id="bs-end" type="date" value={filters.endDate} onChange={(e) => set({ endDate: e.target.value })} className="w-40" />
         </div>
-
         <div className="flex flex-col gap-1">
           <Label htmlFor="bs-search" className="text-xs text-muted-foreground">Search</Label>
-          <Input
-            id="bs-search"
-            type="text"
-            placeholder="Account name"
-            value={filters.search}
-            onChange={(e) => set({ search: e.target.value })}
-            className="w-56"
-          />
+          <Input id="bs-search" type="text" placeholder="Account name" value={filters.search} onChange={(e) => set({ search: e.target.value })} className="w-52" />
         </div>
-
-        <div className="flex flex-col gap-2">
-          <Label className="text-xs text-muted-foreground">Sections</Label>
-          <div className="flex flex-wrap gap-3">
-            <label className="flex items-center gap-1.5 text-sm cursor-pointer">
-              <Checkbox checked={filters.showAssets} onCheckedChange={(c) => set({ showAssets: !!c })} /> Assets
-            </label>
-            <label className="flex items-center gap-1.5 text-sm cursor-pointer">
-              <Checkbox checked={filters.showLiabilities} onCheckedChange={(c) => set({ showLiabilities: !!c })} /> Liabilities
-            </label>
-            <label className="flex items-center gap-1.5 text-sm cursor-pointer">
-              <Checkbox checked={filters.showEquity} onCheckedChange={(c) => set({ showEquity: !!c })} /> Equity
-            </label>
-          </div>
+        <div className="flex flex-col gap-1">
+          <Label className="text-xs text-muted-foreground">Line items</Label>
+          <LineItemsDropdown filters={filters} data={data} onChange={onChange} />
         </div>
-
-        <div className="flex flex-col gap-2">
-          <Label className="text-xs text-muted-foreground">Account filter</Label>
-          <AccountDropdown filters={filters} allAccounts={allAccounts} onChange={onChange} />
-        </div>
-
         <div className="ml-auto">
           <Button variant="outline" onClick={onReset}>Reset</Button>
         </div>

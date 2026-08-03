@@ -9,10 +9,13 @@ import { FinancialAnalysisTables } from '@/components/balance-sheet/FinancialAna
 import { BalanceSheetFigures } from '@/components/balance-sheet/BalanceSheetFigures'
 import { CashPosition } from '@/components/balance-sheet/CashPosition'
 import { AgingAnalysis } from '@/components/balance-sheet/AgingAnalysis'
+import { periodForDate, buildBalanceSheet } from '@/lib/balance-sheet-periods'
 
 export default function BalanceSheetPage() {
   const [filters, setFilters] = useState<BSFilterState>(defaultBSFilters)
-  const data = useMemo(() => filterBalanceSheet(BALANCE_SHEET_DATA, filters), [filters])
+  const period = useMemo(() => periodForDate(filters.endDate), [filters.endDate])
+  const baseData = useMemo(() => buildBalanceSheet(period, '31 Dec 2024'), [period])
+  const data = useMemo(() => filterBalanceSheet(baseData, filters), [baseData, filters])
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-6">
@@ -24,16 +27,16 @@ export default function BalanceSheetPage() {
       </div>
       <div className="flex flex-col gap-5">
         <BalanceSheetFilterPanel
-          filters={filters}
-          allAccounts={allAccountNames(BALANCE_SHEET_DATA)}
-          onChange={setFilters}
-          onReset={() => setFilters(defaultBSFilters())}
-        />
-        <CashPosition />
+        filters={filters}
+        data={baseData}
+        onChange={setFilters}
+        onReset={() => setFilters(defaultBSFilters())}
+      />
+        <CashPosition startDate={filters.startDate} endDate={filters.endDate} />
         <SummaryCards data={data} />
         <BalanceSheetFigures data={data} />
         <FinancialAnalysisTables data={data} />
-        <AgingAnalysis />
+        <AgingAnalysis startDate={filters.startDate} endDate={filters.endDate} />
         <BalanceTable data={data} />
       </div>
     </main>
