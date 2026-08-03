@@ -94,14 +94,22 @@ function LineItemsDropdown({ filters, data, onChange }: { filters: BSFilterState
           {groups.map((g) => (
             <div key={g.section} className="flex flex-col gap-0.5">
               <label className="flex items-center gap-2 text-sm font-semibold px-1.5 py-1 rounded hover:bg-muted cursor-pointer">
-                <Checkbox checked={groupState(g.allItems)} onCheckedChange={() => toggleGroup(g.allItems)} />
+                <Checkbox
+                  checked={groupState(g.allItems) === true}
+                  indeterminate={groupState(g.allItems) === 'indeterminate'}
+                  onCheckedChange={() => toggleGroup(g.allItems)}
+                />
                 {g.section}
               </label>
               {g.subs.map((sub) => (
                 <div key={sub.title} className="flex flex-col gap-0.5">
                   {sub.title !== g.section && (
                     <label className="flex items-center gap-2 text-xs font-medium text-muted-foreground pl-6 pr-1.5 py-0.5 rounded hover:bg-muted cursor-pointer">
-                      <Checkbox checked={groupState(sub.items)} onCheckedChange={() => toggleGroup(sub.items)} />
+                      <Checkbox
+                        checked={groupState(sub.items) === true}
+                        indeterminate={groupState(sub.items) === 'indeterminate'}
+                        onCheckedChange={() => toggleGroup(sub.items)}
+                      />
                       {sub.title}
                     </label>
                   )}
