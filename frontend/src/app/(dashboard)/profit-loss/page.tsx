@@ -18,7 +18,7 @@ const DATE_RANGE = REPORT_DATA.raw_data.reduce(
 
 function defaultFilters(): FilterState {
   return {
-    startDate: DATE_RANGE.min,
+    startDate:'2025-01-01',
     endDate: DATE_RANGE.max,
     search: '',
     topN: 8,

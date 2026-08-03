@@ -1,5 +1,5 @@
 import json
-from datetime import date, timezone, datetime
+from datetime import timezone, datetime
 
 def pd(s):
     if not s: return None
@@ -16,30 +16,43 @@ def load_outstanding(path):
     out = []
     for inv in data.get('Invoices', []):
         if inv.get('Status') in ('AUTHORISED', 'SUBMITTED'):
+            issued = shift_back(pd(inv.get('Date')))
             due = shift_back(pd(inv.get('DueDate')))
             amt = inv.get('AmountDue', 0) or 0
-            if due and amt: out.append((due, float(amt)))
+            if issued and due and amt:
+                out.append((issued.isoformat(), due.isoformat(), round(float(amt), 2)))
     return out
-
-def buckets(items, as_at):
-    b = [0.0, 0.0, 0.0, 0.0]
-    for due, amt in items:
-        days = (as_at - due).days
-        if days <= 30: b[0] += amt
-        elif days <= 60: b[1] += amt
-        elif days <= 90: b[2] += amt
-        else: b[3] += amt
-    return [round(x, 2) for x in b]
 
 ar = load_outstanding('output/raw_invoices.json')
 ap = load_outstanding('output/raw_bills.json')
 
-months = [('2025-%02d' % m, date(2025, m, [31,28,31,30,31,30,31,31,30,31,30,31][m-1])) for m in range(1,13)]
-
-print("// REAL AR/AP aging from Xero outstanding invoices/bills (dates shifted to 2025).")
-print("export type AgingByMonth = { [key: string]: { ar: [number,number,number,number]; ap: [number,number,number,number] } }")
-print("export const AGING_BY_MONTH: AgingByMonth = {")
-for key, dt in months:
-    arb = buckets(ar, dt); apb = buckets(ap, dt)
-    print(f"  '{key}': {{ ar: [{arb[0]}, {arb[1]}, {arb[2]}, {arb[3]}], ap: [{apb[0]}, {apb[1]}, {apb[2]}, {apb[3]}] }},")
+print("// Real outstanding AR/AP items from Xero (dates shifted to 2025).")
+print("// [issued, due, amount] — aging is computed live at any selected date.")
+print("export type AgingItem = { issued: string; due: string; amount: number }")
+print("export const AR_ITEMS: AgingItem[] = [")
+for issued, due, amt in ar:
+    print(f"  {{ issued: '{issued}', due: '{due}', amount: {amt} }},")
+print("]")
+print("export const AP_ITEMS: AgingItem[] = [")
+for issued, due, amt in ap:
+    print(f"  {{ issued: '{issued}', due: '{due}', amount: {amt} }},")
+print("]")
+print("")
+print("// Aging buckets [0-30, 31-60, 61-90, 90+] as at endDate, items issued on/after startDate.")
+print("export function computeAging(items: AgingItem[], startDate: string, endDate: string): [number, number, number, number] {")
+print("  const buckets: [number, number, number, number] = [0, 0, 0, 0]")
+print("  const start = new Date(startDate)")
+print("  const end = new Date(endDate)")
+print("  for (const it of items) {")
+print("    const issued = new Date(it.issued)")
+print("    if (issued < start) continue")
+print("    if (issued > end) continue")
+print("    const due = new Date(it.due)")
+print("    const days = Math.floor((end.getTime() - due.getTime()) / 86400000)")
+print("    if (days <= 30) buckets[0] += it.amount")
+print("    else if (days <= 60) buckets[1] += it.amount")
+print("    else if (days <= 90) buckets[2] += it.amount")
+print("    else buckets[3] += it.amount")
+print("  }")
+print("  return buckets.map((b) => Math.round(b * 100) / 100) as [number, number, number, number]")
 print("}")

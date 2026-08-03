@@ -27,16 +27,16 @@ export default function BalanceSheetPage() {
       </div>
       <div className="flex flex-col gap-5">
         <BalanceSheetFilterPanel
-          filters={filters}
-          allAccounts={allAccountNames(BALANCE_SHEET_DATA)}
-          onChange={setFilters}
-          onReset={() => setFilters(defaultBSFilters())}
-        />
+        filters={filters}
+        data={baseData}
+        onChange={setFilters}
+        onReset={() => setFilters(defaultBSFilters())}
+      />
         <CashPosition startDate={filters.startDate} endDate={filters.endDate} />
         <SummaryCards data={data} />
         <BalanceSheetFigures data={data} />
         <FinancialAnalysisTables data={data} />
-        <AgingAnalysis endDate={filters.endDate} />
+        <AgingAnalysis startDate={filters.startDate} endDate={filters.endDate} />
         <BalanceTable data={data} />
       </div>
     </main>
