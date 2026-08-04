@@ -7,9 +7,9 @@ import { TrendingUp, LayoutList, Sparkles, ChevronLeft, ChevronRight } from 'luc
 import { cn } from '@/lib/utils'
 
 const NAV_ITEMS = [
+  { href: '/ai-insights', label: 'AI Insights', icon: Sparkles },
   { href: '/profit-loss', label: 'Profit & Loss', icon: TrendingUp },
   { href: '/balance-sheet', label: 'Balance Sheet', icon: LayoutList },
-  { href: '/ai-insights', label: 'AI Insights', icon: Sparkles },
 ]
 
 export function Sidebar() {
