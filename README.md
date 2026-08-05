@@ -63,6 +63,24 @@ The script stores the OAuth token in `xero_token.json` and writes the selected
 
 Both files contain local credentials and are excluded from Git.
 
+## QuickBooks Online sandbox (independent connector)
+
+The repository also contains a separate, read-only `quickbooks/` package. It
+connects to a QuickBooks Online sandbox company, downloads paginated raw
+accounting entities, and downloads standard reports as JSON. It does not alter
+or feed into the existing Xero `run_mvp.py` pipeline.
+
+After registering `http://localhost:51790/callback` in an Intuit app and adding
+the development Client ID/Secret to `.env`, run:
+
+```bash
+python login_quickbooks.py
+python download_quickbooks_data.py --from-date 2026-01-01 --to-date 2026-03-31
+```
+
+See [`quickbooks/README.md`](quickbooks/README.md) for sandbox setup, raw entity
+coverage, report coverage, token behavior, and focused download examples.
+
 ## Generate reports
 
 Run the default reporting period (currently 2026-01-01 to 2026-03-31):

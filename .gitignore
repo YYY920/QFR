@@ -4,6 +4,7 @@ output/
 # Secrets & local OAuth / mapping cache
 .env
 xero_token.json
+quickbooks_token.json
 mapping_memory.json
 mapping_memory.json.lock
 
