@@ -63,12 +63,17 @@ The script stores the OAuth token in `xero_token.json` and writes the selected
 
 Both files contain local credentials and are excluded from Git.
 
-## QuickBooks Online sandbox (independent connector)
+## QuickBooks Online sandbox (independent research connector)
 
 The repository also contains a separate, read-only `quickbooks/` package. It
 connects to a QuickBooks Online sandbox company, downloads paginated raw
 accounting entities, and downloads standard reports as JSON. It does not alter
 or feed into the existing Xero `run_mvp.py` pipeline.
+
+The connector layer proves authentication and raw extraction. Its JSON is not
+normalized into the main QFR evidence model, mapped into QFR categories, or
+consumed by the frontend. A separate experimental runner can use the raw P&L
+files for blind source-account reconstruction.
 
 After registering `http://localhost:51790/callback` in an Intuit app and adding
 the development Client ID/Secret to `.env`, run:
@@ -76,10 +81,17 @@ the development Client ID/Secret to `.env`, run:
 ```bash
 python login_quickbooks.py
 python download_quickbooks_data.py --from-date 2026-01-01 --to-date 2026-03-31
+python run_quickbooks.py
 ```
 
 See [`quickbooks/README.md`](quickbooks/README.md) for sandbox setup, raw entity
-coverage, report coverage, token behavior, and focused download examples.
+coverage, report coverage, token behavior, focused download examples, and the
+isolated blind P&L reconstruction experiment.
+
+`run_quickbooks.py` uses the downloaded `ProfitAndLoss` account hierarchy as a
+target taxonomy, hides each detail line's original account from the model,
+classifies the lines, and compares the rebuilt totals with the official report.
+It remains separate from `run_mvp.py`.
 
 ## Generate reports
 
@@ -170,6 +182,8 @@ and are not production authentication.
 
 ```bash
 python -m unittest -v test_ai_mapping.py
+python -m unittest -v test_quickbooks.py
+python -m unittest -v test_run_quickbooks.py
 python test_mapping_consistency.py
 cd frontend && npm test
 cd frontend && npm run lint

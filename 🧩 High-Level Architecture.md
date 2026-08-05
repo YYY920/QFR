@@ -2,7 +2,7 @@
 
 ## 1. Business Goal
 
-QFR is a financial reporting MVP for turning Xero accounting data into a clearer management reporting layer.
+QFR is a financial reporting MVP for turning accounting data into a clearer management reporting layer. The operational pipeline currently uses Xero. A separate QuickBooks Online path is being used to research authentication, raw data access, and blind P&L account reconstruction.
 
 The core business flow is:
 
@@ -14,6 +14,8 @@ The core business flow is:
 6. Present the output in a Next.js dashboard with P&L analytics, Balance Sheet analytics, and an AI assistant for finance Q&A.
 
 The product is not intended to let the LLM perform accounting calculations directly. Calculations, totals, filters, ratios, and reconciliations are deterministic code paths. The LLM is used for classification and narrative explanation.
+
+QuickBooks Online is not part of this core flow yet. The connector downloads raw JSON, and `run_quickbooks.py` can run a separate source-account reconstruction experiment on the downloaded P&L files. It does not call `run_mvp.py`, map into QFR categories, or feed the frontend.
 
 ## 2. Business Logic
 
@@ -70,7 +72,31 @@ The frontend currently displays Balance Sheet data from `frontend/src/lib/balanc
   - year-on-year movement
 - detailed Balance Sheet table with current, prior, and movement columns
 
-The current mock Balance Sheet contains negative bank/assets/equity values, so the UI explicitly warns that sign conventions should be reviewed before treating ratios as final advice.
+The current mock presents Assets and Equity as positive and Liabilities as negative. Sign handling still needs accounting validation before ratios are treated as final advice. In particular, the filtered Net Assets helper currently subtracts an already-negative liability total.
+
+### QuickBooks Online Connection Research
+
+The repository contains a separate read-only connector for QuickBooks Online. Its purpose is to answer a narrow research question: can QFR authenticate with an Intuit sandbox and retrieve the source records and standard reports needed for a future accounting-platform adapter?
+
+The current research flow is:
+
+1. Load QuickBooks-specific settings without changing the Xero configuration.
+2. Start Intuit OAuth 2.0 with the accounting scope and a random state value.
+3. Receive the callback on `http://localhost:51790/callback`.
+4. Validate state, exchange the authorization code, and store the selected company realm ID with the token.
+5. Refresh expired one-hour access tokens and persist Intuit's rotating refresh token.
+6. Query accounting entities with pagination.
+7. Request standard reports for a selected date range and accounting method.
+8. Save the unmodified API responses and a download manifest under `output/quickbooks/`.
+9. Optionally run a blind P&L experiment that hides each detail line's original account, asks AI to classify the line into the account hierarchy extracted from the official P&L, and compares the rebuilt account totals with the official report.
+
+The connector targets QuickBooks Online, not QuickBooks Desktop. Desktop uses a Windows SDK or Web Connector with qbXML and is outside this REST/OAuth research path.
+
+The default raw entity coverage includes accounts, customers, vendors, invoices, bills, purchases, payments, deposits, credit documents, journal entries, items, classes, departments, tax records, and related lists. Standard reports include P&L, detailed P&L, Balance Sheet, Cash Flow, Trial Balance, General Ledger, account list, AR/AP aging, and customer/vendor balances.
+
+The local sandbox download on 5 August 2026 attempted 29 entity types and 11 reports with no recorded endpoint errors. Empty files for some entities mean the sandbox returned no records; they do not indicate a failed connection.
+
+The raw download proves connectivity and extraction. The blind reconstruction measures whether descriptions and transaction context are enough to recover the source P&L accounts. It is an experiment against QuickBooks account labels, not an integration with the QFR taxonomy. QuickBooks payloads still need a source-neutral normalization layer before they can enter the main mapping and reporting pipeline.
 
 ### AI Assistant Business Logic
 
@@ -105,6 +131,26 @@ If no API key is configured or the API fails, the assistant still shows the loca
   - Writes Excel/CSV/JSON/HTML outputs into `output/`.
   - Supports date range flags and cache flags.
 
+- `login_quickbooks.py`
+  - Separate QuickBooks Online sandbox login.
+  - Runs the local OAuth callback and verifies the selected company.
+  - Saves `quickbooks_token.json`.
+
+- `download_quickbooks_data.py`
+  - Separate raw-data downloader.
+  - Refreshes the saved token when required.
+  - Downloads selected entities and reports.
+  - Writes raw JSON plus `manifest.json` under `output/quickbooks/`.
+  - Does not call the Xero/QFR mapping pipeline.
+
+- `run_quickbooks.py`
+  - Reads downloaded `ProfitAndLoss` and `ProfitAndLossDetail` JSON.
+  - Confirms the detailed report reconstructs the official account totals before using AI.
+  - Removes source and split accounts from model input.
+  - Reuses the validated OpenAI mapper for blind line classification.
+  - Writes line-level accuracy and account-level rebuild differences under `output/quickbooks/ai_rebuild/`.
+  - Remains independent from `run_mvp.py`.
+
 - `config.py`
   - Loads environment variables from `.env`.
   - Supports Xero credentials, Gemini key, OpenAI key, and QFR-specific OpenAI key.
@@ -136,6 +182,29 @@ The backend can request:
 - chart of accounts
 - manual/general journals
 - payroll pay runs where authorized
+
+### QuickBooks Research Modules
+
+The `quickbooks/` package is isolated from `xero/` and `run_mvp.py`:
+
+- `config.py`
+  - Loads QuickBooks client credentials, redirect URI, optional realm ID, environment, and API minor version.
+- `oauth.py`
+  - Builds the Intuit authorization URL.
+  - Validates OAuth state.
+  - Exchanges and refreshes tokens.
+  - Writes the token atomically with local owner-only permissions where supported.
+- `client.py`
+  - Provides a read-only QuickBooks Online Accounting API client.
+  - Supports sandbox and production base URLs.
+  - Paginates entity queries and returns report JSON without transforming it.
+- `entities.py`
+  - Defines the research entity list and includes inactive list records.
+- `reports.py`
+  - Defines standard report coverage.
+  - Applies period, as-of date, and Accrual/Cash parameters where supported.
+
+The two accounting connectors deliberately have separate credentials, callback ports, token files, API clients, and output locations. This prevents the QuickBooks spike from changing the existing Xero behavior.
 
 ### AI Modules
 
@@ -174,6 +243,19 @@ Typical generated files include:
 - Xero-vs-AI reconciliation/debug files
 - raw JSON caches when `--use-cache` or dump options are used
 - visual HTML/progress outputs for review
+
+QuickBooks research outputs are separate:
+
+- `output/quickbooks/company_info.json`
+- `output/quickbooks/manifest.json`
+- `output/quickbooks/entities/*.json`
+- `output/quickbooks/reports/*.json`
+- `output/quickbooks/ai_rebuild/quickbooks_pl_source_parse_diff.*`
+- `output/quickbooks/ai_rebuild/quickbooks_pl_blind_line_mapping.*`
+- `output/quickbooks/ai_rebuild/quickbooks_pl_blind_rebuild_diff.*`
+- `output/quickbooks/ai_rebuild/quickbooks_pl_blind_summary.json`
+
+The entity and report files are raw acquisition artifacts. The `ai_rebuild` files are experimental evaluation evidence. Neither group is a main QFR report deliverable.
 
 ## 4. Frontend Architecture
 
@@ -252,6 +334,20 @@ Xero OAuth
   -> Excel/CSV/JSON/HTML outputs
 ```
 
+### QuickBooks Research Data Flow
+
+```text
+Intuit OAuth 2.0
+  -> QuickBooks Online sandbox
+  -> paginated entity queries and standard report APIs
+  -> raw JSON files plus download manifest
+  -> optional run_quickbooks.py blind P&L classification
+  -> source-account rebuild difference files
+  -> stop
+```
+
+There is currently no arrow from this research flow into `run_mvp.py`. The experiment uses QuickBooks account paths as its target labels, not QFR categories. A future integration would require a canonical source adapter between raw QuickBooks JSON and QFR's normalized evidence model.
+
 ### Frontend Data Flow
 
 ```text
@@ -279,6 +375,12 @@ mock report data
 - Excel/CSV outputs for mapping reports and summaries.
 - Reconciliation/debug outputs comparing Xero and AI-derived views.
 - CLI flags for date ranges, full-year reports, cache usage, raw dumps, payroll skipping, journal skipping, and payments-only mode.
+- Separate QuickBooks Online sandbox OAuth research connector.
+- Paginated raw QuickBooks entity download with active and inactive list records.
+- Raw QuickBooks standard report download with period and accounting-method parameters.
+- QuickBooks manifest recording downloaded files, counts, settings, and skipped endpoint errors.
+- Blind QuickBooks P&L account reconstruction with original account fields hidden from AI.
+- Source-parse, line-classification, account-difference, and net-income evaluation outputs.
 
 ### Frontend
 
@@ -318,7 +420,15 @@ python run_mvp.py --use-cache --no-progress
 python -m unittest -v test_ai_mapping.py
 python test_mapping_consistency.py
 python test_openai.py
+python -m unittest -v test_quickbooks.py
+python -m unittest -v test_run_quickbooks.py
+python login_quickbooks.py
+python download_quickbooks_data.py --from-date 2026-01-01 --to-date 2026-03-31
+python run_quickbooks.py --validate-only
+python run_quickbooks.py
 ```
+
+The QuickBooks connector suite contains eight tests covering OAuth URL/state, rotating token persistence, token expiry, pagination, sandbox URL selection, inactive-list queries, and report parameter construction. Two additional runner tests cover report reconstruction and confirm that source and split accounts are not passed to AI.
 
 ### Frontend
 
@@ -374,6 +484,12 @@ For the transferred GitHub ownership/new Vercel account setup:
 - Human review workflow exists as output/reporting logic, but not yet as a full interactive approval workflow.
 - Mapping cache and validation are versioned, but broader rule ownership and
   approval governance are still required before production use.
+- QuickBooks Online remains a research path rather than a main reporting source.
+- QuickBooks raw JSON is not normalized into the QFR evidence schema.
+- The blind P&L experiment maps to QuickBooks source accounts, not QFR categories.
+- QuickBooks data is not exported as main QFR reports or displayed in the frontend.
+- QuickBooks Desktop, sandbox Payroll, and live-bank linking are outside the current research scope.
+- QuickBooks tokens are local files suitable for development, not a production multi-tenant credential store.
 
 ## 10. Near-Term Next Steps
 
@@ -383,3 +499,6 @@ For the transferred GitHub ownership/new Vercel account setup:
 4. Add deploy documentation or `vercel.json` if the project needs repo-controlled deployment behavior.
 5. Expand Balance Sheet data coverage beyond the current mock dataset.
 6. Add a human review UI for low-confidence mapping approvals.
+7. Define a source-neutral accounting evidence schema before integrating another accounting platform.
+8. Build and test a QuickBooks-to-canonical adapter without changing the existing Xero adapter.
+9. Add cross-source reconciliation tests before allowing QuickBooks data into QFR outputs.

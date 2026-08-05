@@ -105,6 +105,69 @@ QBO sandboxes do not support Payroll or linking a live bank account. The sample
 banking transactions already present in the sandbox are still available through
 the accounting entities and reports.
 
+## 5. Blind P&L reconstruction experiment
+
+After downloading `ProfitAndLoss`, `ProfitAndLossDetail`, `AccountList`,
+`CompanyInfo`, and `Item`, run:
+
+```bash
+python run_quickbooks.py
+```
+
+This is an isolated research experiment. It:
+
+1. extracts the QuickBooks P&L account hierarchy as the allowed classification
+   taxonomy;
+2. validates that the detailed report reconstructs the official account totals;
+3. removes the original P&L account and split account from the AI input;
+4. enriches the allowed account paths with AccountList type, detail type, and
+   description metadata;
+5. gives the mapper non-contact CompanyInfo context such as industry, country,
+   and fiscal year;
+6. matches each P&L detail line to one raw transaction line using document
+   number, date, contact, description, and amount;
+7. provides only that line's matched Item/ProductService name, description,
+   type, quantity, sales price, purchase cost, tax settings, and inventory
+   metadata while removing every account reference;
+8. determines Income, COGS, or Expense before account selection, including
+   quantity-times-cost versus quantity-times-price handling for inventory;
+9. applies visible-evidence leaf rules and keeps refunds in the matched Item's
+   income family;
+10. asks the existing OpenAI mapper to classify each remaining line in a
+    separate request restricted to the inferred section;
+11. sends low-confidence, historically ambiguous, or evidence-poor lines to a
+    HITL queue; and
+12. rebuilds account totals and compares them with the official QuickBooks P&L.
+
+The source account is retained only in the output for post-mapping accuracy
+measurement. It is not passed to the model. Company email, street address,
+phone, IDs, and API metadata are also excluded because they do not help account
+classification. Item `IncomeAccountRef`, `ExpenseAccountRef`,
+`AssetAccountRef`, and any other account-reference fields are excluded to keep
+the classification blind to the actual posting answer.
+
+To validate parsing without making OpenAI requests:
+
+```bash
+python run_quickbooks.py --validate-only
+```
+
+Outputs are written to `output/quickbooks/ai_rebuild/`:
+
+- `quickbooks_pl_source_parse_diff.csv` and `.xlsx`
+- `quickbooks_pl_blind_line_mapping.csv` and `.xlsx`
+- `quickbooks_pl_auto_accepted_lines.csv` and `.xlsx`
+- `quickbooks_pl_hitl_queue.csv` and `.xlsx`
+- `quickbooks_pl_official_vs_classified_accounts.csv` and `.xlsx`
+- `quickbooks_pl_all_lines_human_audit.csv` and `.xlsx`
+- `quickbooks_pl_misclassified_lines.csv` and `.xlsx`
+- `quickbooks_pl_blind_rebuild_diff.csv` and `.xlsx`
+- `quickbooks_pl_error_breakdown.csv` and `.xlsx`
+- `quickbooks_pl_error_pairs.csv` and `.xlsx`
+- `quickbooks_pl_blind_summary.json`
+
+This experiment is not connected to `run_mvp.py` or the frontend.
+
 ## Token behavior
 
 QBO access tokens last one hour. The downloader refreshes an expired access

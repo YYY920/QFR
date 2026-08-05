@@ -76,10 +76,11 @@ def _cache_context(
     account_code: str | None,
     account_name: str | None,
     tx_type: str | None,
+    mapping_policy_version: str,
 ) -> Dict[str, Any]:
     taxonomy_json = json.dumps(allowed_categories, sort_keys=True, separators=(",", ":"), default=str)
     return {
-        "mapper": MAPPING_POLICY_VERSION,
+        "mapper": mapping_policy_version,
         "model": MODEL_NAME,
         "amount": float(amount),
         "account_code": (account_code or "").strip(),
@@ -120,13 +121,17 @@ def map_description(
     account_name: str | None = None,
     tx_type: str | None = None,
     request_timeout_seconds: float | None = None,
+    prompt_template: str = MAPPING_PROMPT,
+    mapping_policy_version: str = MAPPING_POLICY_VERSION,
 ) -> Dict[str, Any]:
+    policy_version = mapping_policy_version.strip() or MAPPING_POLICY_VERSION
     context = _cache_context(
         amount,
         allowed_categories,
         account_code,
         account_name,
         tx_type,
+        policy_version,
     )
 
     cached = lookup_mapping(contact, description, context=context)
@@ -148,7 +153,7 @@ def map_description(
         except RuntimeError as exc:
             return _fallback_mapping(allowed_categories, account_name, str(exc))
 
-        prompt = MAPPING_PROMPT.format(
+        prompt = prompt_template.format(
             allowed_categories=json.dumps(allowed_categories, indent=2),
             contact=contact or "Unknown",
             description=description or "",
