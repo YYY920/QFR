@@ -66,6 +66,7 @@ Choose a reporting period or a smaller set of endpoints:
 
 ```bash
 python download_quickbooks_data.py --from-date 2025-07-01 --to-date 2026-06-30
+python download_quickbooks_data.py --opening-date 2025-06-30 --from-date 2025-07-01 --to-date 2026-06-30
 python download_quickbooks_data.py --entities Account,Invoice,Bill,Purchase,JournalEntry --skip-reports
 python download_quickbooks_data.py --reports ProfitAndLoss,BalanceSheet,GeneralLedger --skip-entities
 python download_quickbooks_data.py --accounting-method Cash
@@ -104,6 +105,12 @@ continue downloading. Pass `--strict` to stop on the first error.
 QBO sandboxes do not support Payroll or linking a live bank account. The sample
 banking transactions already present in the sandbox are still available through
 the accounting entities and reports.
+
+When `BalanceSheet` is included, the downloader writes two snapshots:
+
+- `reports/opening_balance_sheet.json` at `--opening-date`, which must be the
+  day before `--from-date` and defaults to that date;
+- `reports/balance_sheet.json` at `--to-date`.
 
 ## 5. Blind P&L reconstruction experiment
 
@@ -167,6 +174,35 @@ Outputs are written to `output/quickbooks/ai_rebuild/`:
 - `quickbooks_pl_blind_summary.json`
 
 This experiment is not connected to `run_mvp.py` or the frontend.
+
+## 6. Balance Sheet record-by-record rebuild
+
+Run:
+
+```bash
+python run_quickbooks_balance_sheet.py
+```
+
+This deterministic runner uses the downloaded Account entity to identify
+Asset, Liability, and Equity accounts. It takes each account's official opening
+balance, applies the period's General Ledger records in date order, and stores
+both the balance before and after every record. Asset movements use debit minus
+credit; Liability and Equity movements use credit minus debit. If QuickBooks
+supplies `subt_nat_amount`, that natural-balance amount is used directly.
+Revenue and Expense ledger records are rolled into the calculated Balance Sheet
+`Net Income` equity line, so the rebuild includes the period-profit bridge and
+not only direct Balance Sheet account postings.
+
+The rebuilt result for every account is compared with the official closing
+Balance Sheet. Differences remain visible; the runner does not force the
+endpoint to equal QuickBooks. Outputs are written to
+`output/quickbooks/balance_sheet_rebuild/`:
+
+- `quickbooks_bs_opening_balances.csv` and `.xlsx`
+- `quickbooks_bs_official_ending_balances.csv` and `.xlsx`
+- `quickbooks_bs_movement_lines.csv` and `.xlsx`
+- `quickbooks_bs_rebuild_diff.csv` and `.xlsx`
+- `quickbooks_bs_summary.json`
 
 ## Token behavior
 

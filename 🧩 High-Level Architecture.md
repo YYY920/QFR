@@ -151,6 +151,14 @@ If no API key is configured or the API fails, the assistant still shows the loca
   - Writes line-level accuracy and account-level rebuild differences under `output/quickbooks/ai_rebuild/`.
   - Remains independent from `run_mvp.py`.
 
+- `run_quickbooks_balance_sheet.py`
+  - Reads official opening and closing QuickBooks Balance Sheet snapshots.
+  - Uses Balance Sheet General Ledger records as deterministic movements.
+  - Rolls Revenue and Expense ledger records into the Net Income equity line.
+  - Adds each record to its account's opening balance in date order.
+  - Writes per-line running balances and an official-ending reconciliation.
+  - Does not call an LLM and remains independent from `run_mvp.py`.
+
 - `config.py`
   - Loads environment variables from `.env`.
   - Supports Xero credentials, Gemini key, OpenAI key, and QFR-specific OpenAI key.
@@ -342,7 +350,8 @@ Intuit OAuth 2.0
   -> paginated entity queries and standard report APIs
   -> raw JSON files plus download manifest
   -> optional run_quickbooks.py blind P&L classification
-  -> source-account rebuild difference files
+  -> optional run_quickbooks_balance_sheet.py opening + GL movement rebuild
+  -> P&L and Balance Sheet reconciliation files
   -> stop
 ```
 
@@ -351,6 +360,12 @@ There is currently no arrow from this research flow into `run_mvp.py`. The exper
 ### Frontend Data Flow
 
 ```text
+Link to Data simulation
+  -> source-specific loading steps and progress
+  -> data loaded confirmation
+  -> AI Insights
+  -> report selection
+
 mock report data
   -> filters and deterministic calculations
   -> dashboard cards/charts/tables

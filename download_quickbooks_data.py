@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -35,6 +35,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--from-date", type=_parse_date, default=date(today.year, 1, 1))
     parser.add_argument("--to-date", type=_parse_date, default=today)
     parser.add_argument(
+        "--opening-date",
+        type=_parse_date,
+        help=(
+            "Balance Sheet opening snapshot date. Defaults to the day before "
+            "--from-date."
+        ),
+    )
+    parser.add_argument(
         "--entities",
         type=_csv_names,
         default=list(DEFAULT_ENTITIES),
@@ -60,6 +68,10 @@ def parse_args() -> argparse.Namespace:
     args = parser.parse_args()
     if args.from_date > args.to_date:
         parser.error("--from-date must be on or before --to-date.")
+    if args.opening_date is None:
+        args.opening_date = args.from_date - timedelta(days=1)
+    if args.opening_date != args.from_date - timedelta(days=1):
+        parser.error("--opening-date must be exactly one day before --from-date.")
     if not 1 <= args.page_size <= 1000:
         parser.error("--page-size must be between 1 and 1000.")
     if args.max_pages < 1:
@@ -160,6 +172,7 @@ def main() -> None:
         "company_name": _company_name(company_info),
         "from_date": args.from_date.isoformat(),
         "to_date": args.to_date.isoformat(),
+        "opening_date": args.opening_date.isoformat(),
         "accounting_method": args.accounting_method,
         "entity": {},
         "report": {},
@@ -198,6 +211,39 @@ def main() -> None:
             args.strict,
             manifest,
         )
+        if "BalanceSheet" in args.reports:
+            print(
+                "Downloading report OpeningBalanceSheet "
+                f"({args.opening_date.isoformat()})..."
+            )
+            try:
+                opening_payload = client.get_report(
+                    "BalanceSheet",
+                    build_report_params(
+                        "BalanceSheet",
+                        from_date=args.opening_date.isoformat(),
+                        to_date=args.opening_date.isoformat(),
+                        accounting_method=args.accounting_method,
+                    ),
+                )
+                opening_path = output_dir / "reports" / "opening_balance_sheet.json"
+                _write_json(opening_path, opening_payload)
+                manifest["report"]["OpeningBalanceSheet"] = {
+                    "file": str(opening_path),
+                    "date": args.opening_date.isoformat(),
+                }
+            except Exception as exc:  # noqa: BLE001
+                if args.strict:
+                    raise
+                message = f"{type(exc).__name__}: {exc}"
+                print(f"  Skipped: {message}")
+                manifest["errors"].append(
+                    {
+                        "kind": "report",
+                        "name": "OpeningBalanceSheet",
+                        "error": message,
+                    }
+                )
 
     _write_json(output_dir / "manifest.json", manifest)
     print(f"Done. Raw QuickBooks JSON is under {output_dir}.")

@@ -82,6 +82,7 @@ the development Client ID/Secret to `.env`, run:
 python login_quickbooks.py
 python download_quickbooks_data.py --from-date 2026-01-01 --to-date 2026-03-31
 python run_quickbooks.py
+python run_quickbooks_balance_sheet.py
 ```
 
 See [`quickbooks/README.md`](quickbooks/README.md) for sandbox setup, raw entity
@@ -92,6 +93,15 @@ isolated blind P&L reconstruction experiment.
 target taxonomy, hides each detail line's original account from the model,
 classifies the lines, and compares the rebuilt totals with the official report.
 It remains separate from `run_mvp.py`.
+
+The downloader also saves an opening Balance Sheet dated one day before the
+requested period (or at an explicit `--opening-date`).
+`run_quickbooks_balance_sheet.py` starts from those official opening balances,
+applies each Balance Sheet General Ledger record in date order, records the
+balance before and after every line, and compares the rebuilt endpoint with the
+official closing Balance Sheet. Revenue and expense lines roll into the Balance
+Sheet's calculated Net Income line. Its CSV, Excel, and JSON outputs are written to
+`output/quickbooks/balance_sheet_rebuild/`.
 
 ## Generate reports
 
