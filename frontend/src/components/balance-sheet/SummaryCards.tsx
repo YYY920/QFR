@@ -3,15 +3,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import type { BalanceSheetData } from '@/lib/balance-sheet-mock'
 
-function fmtAUD(value: number): string {
+function fmtCurrency(value: number, currency: string): string {
   return new Intl.NumberFormat('en-AU', {
     style: 'currency',
-    currency: 'AUD',
+    currency,
     minimumFractionDigits: 2,
   }).format(value)
 }
 
 export function SummaryCards({ data }: { data: BalanceSheetData }) {
+  const currency = data.currency ?? 'AUD'
   const cards = [
     { label: 'Total Assets',      item: data.assets.total,      warn: data.assets.total.current < 0 },
     { label: 'Total Liabilities', item: data.liabilities.total, warn: false },
@@ -31,10 +32,10 @@ export function SummaryCards({ data }: { data: BalanceSheetData }) {
           </CardHeader>
           <CardContent className="pb-4">
             <p className={cn('text-2xl font-bold', item.current < 0 && 'text-red-600')}>
-              {fmtAUD(item.current)}
+              {fmtCurrency(item.current, currency)}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              {item.prior === 0 ? 'New in 2025' : `Prior: ${fmtAUD(item.prior)}`}
+              {item.prior === 0 ? `Opening at ${data.priorPeriod}: zero` : `Prior: ${fmtCurrency(item.prior, currency)}`}
             </p>
           </CardContent>
         </Card>

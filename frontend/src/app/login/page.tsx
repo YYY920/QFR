@@ -20,7 +20,7 @@ export default function LoginPage() {
     setError('')
     const ok = login(username, password, apiKey)
     if (ok) {
-      router.push('/profit-loss')
+      router.push('/link-data')
     } else {
       setError('Invalid username or password')
     }

@@ -84,6 +84,8 @@ export function filterBalanceSheet(data: BalanceSheetData, f: BSFilterState): Ba
 
   return {
     company: data.company,
+    currency: data.currency,
+    source: data.source,
     asAt: data.asAt,
     priorPeriod: data.priorPeriod,
     assets: { subsections: assetSubs, total: assetsTotal },

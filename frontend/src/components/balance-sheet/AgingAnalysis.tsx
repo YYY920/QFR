@@ -11,18 +11,33 @@ function fmtDate(iso: string): string {
   return `${d}/${m}/${y}`
 }
 
-function fmtAUD(value: number | string | readonly (number | string)[] | undefined) {
+function fmtCurrency(value: number | string | readonly (number | string)[] | undefined, currency: string) {
   if (value === undefined || Array.isArray(value)) return ''
   const amount = typeof value === 'string' ? Number(value) : value
-  return amount.toLocaleString('en-AU', { style: 'currency', currency: 'AUD', maximumFractionDigits: 0 })
+  return amount.toLocaleString('en-AU', { style: 'currency', currency, maximumFractionDigits: 0 })
 }
 
-export function AgingAnalysis({ startDate, endDate }: { startDate: string; endDate: string }) {
-  const ar = computeAging(AR_ITEMS, startDate, endDate)
-  const ap = computeAging(AP_ITEMS, startDate, endDate)
+type AgingBuckets = {
+  receivables: [number, number, number, number]
+  payables: [number, number, number, number]
+}
 
-  const buckets = ['0–30 days', '31–60 days', '61–90 days', '90+ days']
-  const data = buckets.map((bucket, i) => ({ bucket, receivables: ar[i], payables: ap[i] }))
+export function AgingAnalysis({
+  startDate,
+  endDate,
+  buckets,
+  currency = 'AUD',
+}: {
+  startDate: string
+  endDate: string
+  buckets?: AgingBuckets
+  currency?: string
+}) {
+  const ar = buckets?.receivables ?? computeAging(AR_ITEMS, startDate, endDate)
+  const ap = buckets?.payables ?? computeAging(AP_ITEMS, startDate, endDate)
+
+  const bucketLabels = ['0–30 days', '31–60 days', '61–90 days', '90+ days']
+  const data = bucketLabels.map((bucket, i) => ({ bucket, receivables: ar[i], payables: ap[i] }))
 
   return (
     <Card>
@@ -38,7 +53,7 @@ export function AgingAnalysis({ startDate, endDate }: { startDate: string; endDa
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="bucket" tick={{ fontSize: 11 }} />
             <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `$${(Number(v) / 1000).toFixed(0)}k`} />
-            <Tooltip formatter={fmtAUD} />
+            <Tooltip formatter={(value) => fmtCurrency(value, currency)} />
             <Legend />
             <Bar dataKey="receivables" name="Receivables" fill={C.blue} radius={[3, 3, 0, 0]} />
             <Bar dataKey="payables" name="Payables" fill={C.pink} radius={[3, 3, 0, 0]} />

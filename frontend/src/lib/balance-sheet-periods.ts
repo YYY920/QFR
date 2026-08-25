@@ -52,6 +52,8 @@ export function buildBalanceSheet(p: BSPeriod, priorLabel: string): BalanceSheet
 
   return {
     company: 'Demo Company (AU)',
+    currency: 'AUD',
+    source: 'Xero',
     asAt: p.label,
     priorPeriod: priorLabel,
     assets: {

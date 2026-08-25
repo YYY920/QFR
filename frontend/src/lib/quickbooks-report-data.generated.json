@@ -1,0 +1,3792 @@
+{
+  "source": {
+    "name": "QuickBooks",
+    "company": "Sandbox Company US fa5f",
+    "currency": "USD"
+  },
+  "profitLoss": {
+    "meta": {
+      "report_from": "2026-01-01",
+      "report_to": "2026-08-25",
+      "balance_sheet_date": "2026-08-25"
+    },
+    "raw_data": [
+      {
+        "Type": "Sales Receipt",
+        "InvoiceNumber": "1008",
+        "Date": "2026-06-14",
+        "Contact": "Kate Whelan",
+        "AccountCode": "82",
+        "AccountName": "Income > Design income",
+        "Description": "Custom Design",
+        "Amount": 225.0,
+        "MappedCategory": "Income > Design income",
+        "Confidence": 0.9,
+        "Reason": "The transaction involves a service sale for 'Custom Design' which aligns with the 'Design income' account.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Design income",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1007",
+        "Date": "2026-06-14",
+        "Contact": "John Melton",
+        "AccountCode": "82",
+        "AccountName": "Income > Design income",
+        "Description": "Custom Design",
+        "Amount": 750.0,
+        "MappedCategory": "Income > Design income",
+        "Confidence": 0.9,
+        "Reason": "The transaction is for a service labeled 'Custom Design' with a clear income amount, aligning with the Design income category.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Design income",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Sales Receipt",
+        "InvoiceNumber": "1003",
+        "Date": "2026-07-04",
+        "Contact": "Dylan Sollfrank",
+        "AccountCode": "82",
+        "AccountName": "Income > Design income",
+        "Description": "Custom Design",
+        "Amount": 337.5,
+        "MappedCategory": "Income > Design income",
+        "Confidence": 0.9,
+        "Reason": "The transaction is a sales receipt for a service named 'Design', which aligns with the 'Design income' account.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Design income",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1015",
+        "Date": "2026-07-07",
+        "Contact": "Paulsen Medical Supplies",
+        "AccountCode": "82",
+        "AccountName": "Income > Design income",
+        "Description": "Custom Design",
+        "Amount": 300.0,
+        "MappedCategory": "Income > Design income",
+        "Confidence": 0.9,
+        "Reason": "The transaction involves a service labeled 'Custom Design' which aligns with the 'Design income' account, supported by the invoice details.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Design income",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1010",
+        "Date": "2026-07-07",
+        "Contact": "Weiskopf Consulting",
+        "AccountCode": "82",
+        "AccountName": "Income > Design income",
+        "Description": "Custom Design",
+        "Amount": 375.0,
+        "MappedCategory": "Income > Design income",
+        "Confidence": 0.9,
+        "Reason": "The transaction is for a service labeled 'Custom Design' with a clear income amount derived from the unit price and quantity sold.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Design income",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1033",
+        "Date": "2026-07-08",
+        "Contact": "Geeta Kalapatapu",
+        "AccountCode": "82",
+        "AccountName": "Income > Design income",
+        "Description": "Custom Design",
+        "Amount": 262.5,
+        "MappedCategory": "Income > Design income",
+        "Confidence": 0.9,
+        "Reason": "The transaction is an invoice for a service related to design, which aligns with the Design income account.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Design income",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1012",
+        "Date": "2026-06-25",
+        "Contact": "Shara Barnett:Barnett Design",
+        "AccountCode": "86",
+        "AccountName": "Income > Discounts given",
+        "Description": "Discount",
+        "Amount": -30.5,
+        "MappedCategory": "Income > Discounts given",
+        "Confidence": 0.9,
+        "Reason": "The transaction is a discount related to an invoice, which aligns with the Discounts given account.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Discounts given",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1015",
+        "Date": "2026-07-07",
+        "Contact": "Paulsen Medical Supplies",
+        "AccountCode": "86",
+        "AccountName": "Income > Discounts given",
+        "Description": "Discount",
+        "Amount": -50.25,
+        "MappedCategory": "Income > Discounts given",
+        "Confidence": 0.9,
+        "Reason": "The transaction is a discount related to an invoice, which aligns with the Discounts given account.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Discounts given",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Sales Receipt",
+        "InvoiceNumber": "1011",
+        "Date": "2026-07-07",
+        "Contact": "Pye's Cakes",
+        "AccountCode": "86",
+        "AccountName": "Income > Discounts given",
+        "Description": "Discount",
+        "Amount": -8.75,
+        "MappedCategory": "Income > Discounts given",
+        "Confidence": 0.9,
+        "Reason": "The transaction is a discount related to a sales receipt, which aligns with the Discounts given account.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Discounts given",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1002",
+        "Date": "2026-03-24",
+        "Contact": "Bill's Windsurf Shop",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Weekly Gardening Service",
+        "Amount": 140.0,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-general-landscaping-service; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-general-landscaping-service",
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1030",
+        "Date": "2026-03-24",
+        "Contact": "Freeman Sporting Goods:0969 Ocean View Road",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Weekly Gardening Service",
+        "Amount": 50.0,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-general-landscaping-service; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-general-landscaping-service",
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1031",
+        "Date": "2026-04-24",
+        "Contact": "Freeman Sporting Goods:0969 Ocean View Road",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Weekly Gardening Service",
+        "Amount": 90.0,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-general-landscaping-service; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-general-landscaping-service",
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1016",
+        "Date": "2026-05-21",
+        "Contact": "Kookies by Kathy",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Weekly Gardening Service",
+        "Amount": 75.0,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-general-landscaping-service; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-general-landscaping-service",
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1027",
+        "Date": "2026-05-22",
+        "Contact": "Bill's Windsurf Shop",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Weekly Gardening Service",
+        "Amount": 50.0,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-general-landscaping-service; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-general-landscaping-service",
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1028",
+        "Date": "2026-05-22",
+        "Contact": "Freeman Sporting Goods:55 Twin Lane",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Weekly Gardening Service",
+        "Amount": 75.0,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-general-landscaping-service; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-general-landscaping-service",
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1025",
+        "Date": "2026-05-22",
+        "Contact": "Amy's Bird Sanctuary",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Weekly Gardening Service",
+        "Amount": 120.0,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-general-landscaping-service; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-general-landscaping-service",
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1006",
+        "Date": "2026-05-31",
+        "Contact": "Freeman Sporting Goods:55 Twin Lane",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Weekly Gardening Service",
+        "Amount": 80.0,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-general-landscaping-service; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-general-landscaping-service",
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1022",
+        "Date": "2026-06-17",
+        "Contact": "Jeff's Jalopies",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Weekly Gardening Service",
+        "Amount": 75.0,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-general-landscaping-service; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-general-landscaping-service",
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1017",
+        "Date": "2026-06-23",
+        "Contact": "Sushi by Katsuyuki",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Weekly Gardening Service",
+        "Amount": 80.0,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-general-landscaping-service; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-general-landscaping-service",
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1013",
+        "Date": "2026-06-27",
+        "Contact": "Travis Waldron",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Weekly Gardening Service",
+        "Amount": 75.0,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.8,
+        "Reason": "The transaction is an invoice for a gardening service, which aligns with the Landscaping Services income category.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1005",
+        "Date": "2026-06-30",
+        "Contact": "Freeman Sporting Goods:55 Twin Lane",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Weekly Gardening Service",
+        "Amount": 50.0,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-general-landscaping-service; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-general-landscaping-service",
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1018",
+        "Date": "2026-06-30",
+        "Contact": "Sushi by Katsuyuki",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Weekly Gardening Service",
+        "Amount": 80.0,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-general-landscaping-service; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-general-landscaping-service",
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Sales Receipt",
+        "InvoiceNumber": "1014",
+        "Date": "2026-07-05",
+        "Contact": "Diego Rodriguez",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Weekly Gardening Service",
+        "Amount": 140.0,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-general-landscaping-service; Sales Receipt is treated as an income-side reversal or sale.",
+        "RuleID": "matched-general-landscaping-service",
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1001",
+        "Date": "2026-07-06",
+        "Contact": "Amy's Bird Sanctuary",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Weekly Gardening Service",
+        "Amount": 100.0,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-general-landscaping-service; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-general-landscaping-service",
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1019",
+        "Date": "2026-07-07",
+        "Contact": "Sushi by Katsuyuki",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Weekly Gardening Service",
+        "Amount": 80.0,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-general-landscaping-service; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-general-landscaping-service",
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1034",
+        "Date": "2026-07-08",
+        "Contact": "Rondonuwu Fruit and Vegi",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Tree and Shrub Trimming",
+        "Amount": 30.0,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-general-landscaping-service; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-general-landscaping-service",
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1036",
+        "Date": "2026-07-09",
+        "Contact": "Freeman Sporting Goods:0969 Ocean View Road",
+        "AccountCode": "45",
+        "AccountName": "Income > Landscaping Services",
+        "Description": "Weekly Gardening Service",
+        "Amount": 87.5,
+        "MappedCategory": "Income > Landscaping Services",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-general-landscaping-service; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-general-landscaping-service",
+        "OriginalMappedCategory": "Income > Landscaping Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1031",
+        "Date": "2026-04-24",
+        "Contact": "Freeman Sporting Goods:0969 Ocean View Road",
+        "AccountCode": "48",
+        "AccountName": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Description": "Rock Fountain",
+        "Amount": 275.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Confidence": 0.7,
+        "Reason": "The transaction involves the sale of a Rock Fountain, which aligns with Job Materials under Landscaping Services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1024",
+        "Date": "2026-05-01",
+        "Contact": "Red Rock Diner",
+        "AccountCode": "48",
+        "AccountName": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Description": "Garden Rocks",
+        "Amount": 48.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-fountain-material; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-fountain-material",
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1029",
+        "Date": "2026-05-22",
+        "Contact": "Dukes Basketball Camp",
+        "AccountCode": "48",
+        "AccountName": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Description": "Concrete for fountain installation",
+        "Amount": 75.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-fountain-material; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-fountain-material",
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1029",
+        "Date": "2026-05-22",
+        "Contact": "Dukes Basketball Camp",
+        "AccountCode": "48",
+        "AccountName": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Description": "Rock Fountain",
+        "Amount": 275.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Confidence": 0.8,
+        "Reason": "The transaction involves the sale of a Rock Fountain, which aligns with Job Materials under Landscaping Services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1029",
+        "Date": "2026-05-22",
+        "Contact": "Dukes Basketball Camp",
+        "AccountCode": "48",
+        "AccountName": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Description": "Garden Rocks",
+        "Amount": 72.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-fountain-material; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-fountain-material",
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1021",
+        "Date": "2026-06-17",
+        "Contact": "Amy's Bird Sanctuary",
+        "AccountCode": "48",
+        "AccountName": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Description": "Rock Fountain",
+        "Amount": 275.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Confidence": 0.8,
+        "Reason": "The transaction involves the sale of a Rock Fountain, which aligns with Job Materials under Landscaping Services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1012",
+        "Date": "2026-06-25",
+        "Contact": "Shara Barnett:Barnett Design",
+        "AccountCode": "48",
+        "AccountName": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Description": "Rock Fountain",
+        "Amount": 275.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Confidence": 0.8,
+        "Reason": "The transaction involves the sale of a Rock Fountain, which aligns with Job Materials under Landscaping Services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1032",
+        "Date": "2026-07-06",
+        "Contact": "Travis Waldron",
+        "AccountCode": "48",
+        "AccountName": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Description": "Garden Rocks",
+        "Amount": 84.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-fountain-material; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-fountain-material",
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1015",
+        "Date": "2026-07-07",
+        "Contact": "Paulsen Medical Supplies",
+        "AccountCode": "48",
+        "AccountName": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Description": "Rock Fountain",
+        "Amount": 275.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Confidence": 0.8,
+        "Reason": "The transaction involves the sale of a Rock Fountain, which aligns with job materials in landscaping services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1015",
+        "Date": "2026-07-07",
+        "Contact": "Paulsen Medical Supplies",
+        "AccountCode": "48",
+        "AccountName": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Description": "Garden Rocks",
+        "Amount": 180.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-fountain-material; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-fountain-material",
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1033",
+        "Date": "2026-07-08",
+        "Contact": "Geeta Kalapatapu",
+        "AccountCode": "48",
+        "AccountName": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Description": "Rock Fountain",
+        "Amount": 275.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Confidence": 0.8,
+        "Reason": "The transaction involves the sale of a Rock Fountain, which aligns with Job Materials under Landscaping Services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1033",
+        "Date": "2026-07-08",
+        "Contact": "Geeta Kalapatapu",
+        "AccountCode": "48",
+        "AccountName": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Description": "Fountain Pump",
+        "Amount": 45.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Confidence": 0.8,
+        "Reason": "The transaction involves the sale of a fountain pump, which aligns with job materials in landscaping services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1034",
+        "Date": "2026-07-08",
+        "Contact": "Rondonuwu Fruit and Vegi",
+        "AccountCode": "48",
+        "AccountName": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Description": "Garden Lighting",
+        "Amount": 45.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-fountain-material; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-fountain-material",
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1037",
+        "Date": "2026-07-09",
+        "Contact": "Sonnenschein Family Store",
+        "AccountCode": "48",
+        "AccountName": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Description": "Concrete for fountain installation",
+        "Amount": 47.5,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-fountain-material; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-fountain-material",
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1030",
+        "Date": "2026-03-24",
+        "Contact": "Freeman Sporting Goods:0969 Ocean View Road",
+        "AccountCode": "49",
+        "AccountName": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "Description": "Sod",
+        "Amount": 131.25,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-plant-soil-material; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-plant-soil-material",
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1021",
+        "Date": "2026-06-17",
+        "Contact": "Amy's Bird Sanctuary",
+        "AccountCode": "49",
+        "AccountName": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "Description": "2 cubic ft. bag",
+        "Amount": 150.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-plant-soil-material; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-plant-soil-material",
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Expense",
+        "InvoiceNumber": "8",
+        "Date": "2026-06-21",
+        "Contact": "Hicks Hardware",
+        "AccountCode": "49",
+        "AccountName": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "Description": "Document 8",
+        "Amount": -24.36,
+        "MappedCategory": "Expenses > Job Expenses",
+        "Confidence": 0.7,
+        "Reason": "The transaction is an expense related to a purchase from Hicks Hardware, likely for job materials, which aligns with Job Expenses.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1004",
+        "Date": "2026-06-27",
+        "Contact": "Cool Cars",
+        "AccountCode": "49",
+        "AccountName": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "Description": "Sod",
+        "Amount": 1750.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-plant-soil-material; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-plant-soil-material",
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Expense",
+        "InvoiceNumber": "22",
+        "Date": "2026-06-29",
+        "Contact": "Tania's Nursery",
+        "AccountCode": "49",
+        "AccountName": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "Description": "Document 22",
+        "Amount": -54.92,
+        "MappedCategory": "Expenses > Job Expenses",
+        "Confidence": 0.7,
+        "Reason": "The transaction is an expense related to a purchase from a nursery, likely for job materials, but lacks specific details to classify it further.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1032",
+        "Date": "2026-07-06",
+        "Contact": "Travis Waldron",
+        "AccountCode": "49",
+        "AccountName": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "Description": "Sod",
+        "Amount": 300.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-plant-soil-material; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-plant-soil-material",
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1036",
+        "Date": "2026-07-09",
+        "Contact": "Freeman Sporting Goods:0969 Ocean View Road",
+        "AccountCode": "49",
+        "AccountName": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "Description": "Sod",
+        "Amount": 50.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-plant-soil-material; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-plant-soil-material",
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1036",
+        "Date": "2026-07-09",
+        "Contact": "Freeman Sporting Goods:0969 Ocean View Road",
+        "AccountCode": "49",
+        "AccountName": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "Description": "2 cubic ft. bag",
+        "Amount": 50.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule matched-plant-soil-material; Invoice is treated as an income-side reversal or sale.",
+        "RuleID": "matched-plant-soil-material",
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Plants and Soil",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1024",
+        "Date": "2026-05-01",
+        "Contact": "Red Rock Diner",
+        "AccountCode": "50",
+        "AccountName": "Income > Landscaping Services > Job Materials > Sprinklers and Drip Systems",
+        "Description": "Sprinkler Pipes",
+        "Amount": 48.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Sprinklers and Drip Systems",
+        "Confidence": 0.9,
+        "Reason": "The transaction involves the sale of Sprinkler Pipes, which aligns with the Job Materials category under Landscaping Services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Sprinklers and Drip Systems",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1024",
+        "Date": "2026-05-01",
+        "Contact": "Red Rock Diner",
+        "AccountCode": "50",
+        "AccountName": "Income > Landscaping Services > Job Materials > Sprinklers and Drip Systems",
+        "Description": "Sprinkler Pipes",
+        "Amount": 60.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Sprinklers and Drip Systems",
+        "Confidence": 0.9,
+        "Reason": "The transaction involves the sale of Sprinkler Pipes, which aligns with the Job Materials category under Landscaping Services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Sprinklers and Drip Systems",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1012",
+        "Date": "2026-06-25",
+        "Contact": "Shara Barnett:Barnett Design",
+        "AccountCode": "50",
+        "AccountName": "Income > Landscaping Services > Job Materials > Sprinklers and Drip Systems",
+        "Description": "Sprinkler Heads",
+        "Amount": 30.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Sprinklers and Drip Systems",
+        "Confidence": 0.9,
+        "Reason": "The transaction involves the sale of Sprinkler Heads, which aligns with the Job Materials category under Landscaping Services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Landscaping Services > Job Materials > Sprinklers and Drip Systems",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1015",
+        "Date": "2026-07-07",
+        "Contact": "Paulsen Medical Supplies",
+        "AccountCode": "52",
+        "AccountName": "Income > Landscaping Services > Labor > Installation",
+        "Description": "Installation of landscape design",
+        "Amount": 250.0,
+        "MappedCategory": "Income > Landscaping Services > Labor > Installation",
+        "Confidence": 0.9,
+        "Reason": "The transaction is for an installation service, which aligns with the Labor > Installation account path.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Landscaping Services > Labor > Installation",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1025",
+        "Date": "2026-05-22",
+        "Contact": "Amy's Bird Sanctuary",
+        "AccountCode": "53",
+        "AccountName": "Income > Landscaping Services > Labor > Maintenance and Repair",
+        "Description": "Maintenance & Repair",
+        "Amount": 50.0,
+        "MappedCategory": "Income > Landscaping Services > Labor > Maintenance and Repair",
+        "Confidence": 0.9,
+        "Reason": "The transaction is for a service related to maintenance and repair, which aligns with the specific account path for labor services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Landscaping Services > Labor > Maintenance and Repair",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1002",
+        "Date": "2026-03-24",
+        "Contact": "Bill's Windsurf Shop",
+        "AccountCode": "54",
+        "AccountName": "Income > Pest Control Services",
+        "Description": "Pest Control Services",
+        "Amount": 35.0,
+        "MappedCategory": "Income > Pest Control Services",
+        "Confidence": 0.9,
+        "Reason": "The transaction is for Pest Control Services, which directly matches the account path for income.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Pest Control Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1030",
+        "Date": "2026-03-24",
+        "Contact": "Freeman Sporting Goods:0969 Ocean View Road",
+        "AccountCode": "54",
+        "AccountName": "Income > Pest Control Services",
+        "Description": "Pest Control Services",
+        "Amount": 35.0,
+        "MappedCategory": "Income > Pest Control Services",
+        "Confidence": 0.9,
+        "Reason": "The transaction is for Pest Control Services, which directly matches the account path for income.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Pest Control Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1027",
+        "Date": "2026-05-22",
+        "Contact": "Bill's Windsurf Shop",
+        "AccountCode": "54",
+        "AccountName": "Income > Pest Control Services",
+        "Description": "Pest Control Services",
+        "Amount": 35.0,
+        "MappedCategory": "Income > Pest Control Services",
+        "Confidence": 0.9,
+        "Reason": "The transaction is for Pest Control Services, which directly matches the account path for income related to pest control.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Pest Control Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1025",
+        "Date": "2026-05-22",
+        "Contact": "Amy's Bird Sanctuary",
+        "AccountCode": "54",
+        "AccountName": "Income > Pest Control Services",
+        "Description": "Pest Control Services",
+        "Amount": 35.0,
+        "MappedCategory": "Income > Pest Control Services",
+        "Confidence": 0.9,
+        "Reason": "The transaction is for Pest Control Services, which directly matches the account path for income related to pest control.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Pest Control Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Credit Memo",
+        "InvoiceNumber": "1026",
+        "Date": "2026-06-22",
+        "Contact": "Amy's Bird Sanctuary",
+        "AccountCode": "54",
+        "AccountName": "Income > Pest Control Services",
+        "Description": "Pest Control Services",
+        "Amount": -100.0,
+        "MappedCategory": "Income > Pest Control Services",
+        "Confidence": 0.9,
+        "Reason": "The transaction is a credit memo for Pest Control Services, indicating a reversal of income in that specific category.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Pest Control Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1023",
+        "Date": "2026-07-07",
+        "Contact": "Red Rock Diner",
+        "AccountCode": "54",
+        "AccountName": "Income > Pest Control Services",
+        "Description": "Pest Control Services",
+        "Amount": 70.0,
+        "MappedCategory": "Income > Pest Control Services",
+        "Confidence": 0.9,
+        "Reason": "The transaction is for Pest Control Services, which directly matches the account path for income related to pest control.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Pest Control Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Refund",
+        "InvoiceNumber": "1020",
+        "Date": "2026-07-07",
+        "Contact": "Pye's Cakes",
+        "AccountCode": "54",
+        "AccountName": "Income > Pest Control Services",
+        "Description": "Refund - Pest control was ineffective",
+        "Amount": -87.5,
+        "MappedCategory": "Income > Pest Control Services",
+        "Confidence": 0.9,
+        "Reason": "The transaction is a refund for Pest Control Services, which directly aligns with the matched item and the income category.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Pest Control Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Sales Receipt",
+        "InvoiceNumber": "1011",
+        "Date": "2026-07-07",
+        "Contact": "Pye's Cakes",
+        "AccountCode": "54",
+        "AccountName": "Income > Pest Control Services",
+        "Description": "Pest Control Services",
+        "Amount": 87.5,
+        "MappedCategory": "Income > Pest Control Services",
+        "Confidence": 0.9,
+        "Reason": "The transaction is for Pest Control Services, which directly matches the account path for income.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Pest Control Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1004",
+        "Date": "2026-06-27",
+        "Contact": "Cool Cars",
+        "AccountCode": "79",
+        "AccountName": "Income > Sales of Product Income",
+        "Description": "Sprinkler Heads",
+        "Amount": 20.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Sprinklers and Drip Systems",
+        "Confidence": 0.9,
+        "Reason": "The transaction involves the sale of Sprinkler Heads, which aligns with the Job Materials category under Landscaping Services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Sales of Product Income",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1004",
+        "Date": "2026-06-27",
+        "Contact": "Cool Cars",
+        "AccountCode": "79",
+        "AccountName": "Income > Sales of Product Income",
+        "Description": "Sprinkler Pipes",
+        "Amount": 24.0,
+        "MappedCategory": "Income > Landscaping Services > Job Materials > Sprinklers and Drip Systems",
+        "Confidence": 0.9,
+        "Reason": "The transaction involves the sale of 'Sprinkler Pipes', which aligns with the Job Materials category under Landscaping Services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Sales of Product Income",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1035",
+        "Date": "2026-07-09",
+        "Contact": "Mark Cho",
+        "AccountCode": "79",
+        "AccountName": "Income > Sales of Product Income",
+        "Description": "Sprinkler Pipes",
+        "Amount": 16.0,
+        "MappedCategory": "Income > Sales of Product Income",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule current-inventory-product-sale; Inventory amount matches the raw sales line (16).",
+        "RuleID": "current-inventory-product-sale",
+        "OriginalMappedCategory": "Income > Sales of Product Income",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1036",
+        "Date": "2026-07-09",
+        "Contact": "Freeman Sporting Goods:0969 Ocean View Road",
+        "AccountCode": "79",
+        "AccountName": "Income > Sales of Product Income",
+        "Description": "Fountain Pump",
+        "Amount": 15.0,
+        "MappedCategory": "Income > Sales of Product Income",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule current-inventory-product-sale; Inventory amount matches the raw sales line (15).",
+        "RuleID": "current-inventory-product-sale",
+        "OriginalMappedCategory": "Income > Sales of Product Income",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1035",
+        "Date": "2026-07-09",
+        "Contact": "Mark Cho",
+        "AccountCode": "79",
+        "AccountName": "Income > Sales of Product Income",
+        "Description": "Rock Fountain",
+        "Amount": 275.0,
+        "MappedCategory": "Income > Sales of Product Income",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule current-inventory-product-sale; Inventory amount matches the raw sales line (275).",
+        "RuleID": "current-inventory-product-sale",
+        "OriginalMappedCategory": "Income > Sales of Product Income",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1036",
+        "Date": "2026-07-09",
+        "Contact": "Freeman Sporting Goods:0969 Ocean View Road",
+        "AccountCode": "79",
+        "AccountName": "Income > Sales of Product Income",
+        "Description": "Rock Fountain",
+        "Amount": 275.0,
+        "MappedCategory": "Income > Sales of Product Income",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule current-inventory-product-sale; Inventory amount matches the raw sales line (275).",
+        "RuleID": "current-inventory-product-sale",
+        "OriginalMappedCategory": "Income > Sales of Product Income",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1037",
+        "Date": "2026-07-09",
+        "Contact": "Sonnenschein Family Store",
+        "AccountCode": "79",
+        "AccountName": "Income > Sales of Product Income",
+        "Description": "Fountain Pump",
+        "Amount": 12.75,
+        "MappedCategory": "Income > Sales of Product Income",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule current-inventory-product-sale; Inventory amount matches the raw sales line (12.75).",
+        "RuleID": "current-inventory-product-sale",
+        "OriginalMappedCategory": "Income > Sales of Product Income",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1037",
+        "Date": "2026-07-09",
+        "Contact": "Sonnenschein Family Store",
+        "AccountCode": "79",
+        "AccountName": "Income > Sales of Product Income",
+        "Description": "Rock Fountain",
+        "Amount": 275.0,
+        "MappedCategory": "Income > Sales of Product Income",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule current-inventory-product-sale; Inventory amount matches the raw sales line (275).",
+        "RuleID": "current-inventory-product-sale",
+        "OriginalMappedCategory": "Income > Sales of Product Income",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1004",
+        "Date": "2026-06-27",
+        "Contact": "Cool Cars",
+        "AccountCode": "1",
+        "AccountName": "Income > Services",
+        "Description": "Installation Hours",
+        "Amount": 400.0,
+        "MappedCategory": "Income > Services",
+        "Confidence": 0.9,
+        "Reason": "The transaction is an invoice for services rendered, specifically for installation hours, which aligns with the Services income category.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1009",
+        "Date": "2026-07-06",
+        "Contact": "Travis Waldron",
+        "AccountCode": "1",
+        "AccountName": "Income > Services",
+        "Description": "Lumber",
+        "Amount": 103.55,
+        "MappedCategory": "Income > Services",
+        "Confidence": 0.9,
+        "Reason": "The transaction is an invoice for a service, which aligns with the 'Services' income category.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Income > Services",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1036",
+        "Date": "2026-07-09",
+        "Contact": "Freeman Sporting Goods:0969 Ocean View Road",
+        "AccountCode": "80",
+        "AccountName": "Cost of Goods Sold > Cost of Goods Sold",
+        "Description": "Rock Fountain",
+        "Amount": 125.0,
+        "MappedCategory": "Cost of Goods Sold > Cost of Goods Sold",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule role-first-cogs; Inventory amount matches Qty x PurchaseCost (1 x 125 = 125).",
+        "RuleID": "role-first-cogs",
+        "OriginalMappedCategory": "Cost of Goods Sold > Cost of Goods Sold",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1036",
+        "Date": "2026-07-09",
+        "Contact": "Freeman Sporting Goods:0969 Ocean View Road",
+        "AccountCode": "80",
+        "AccountName": "Cost of Goods Sold > Cost of Goods Sold",
+        "Description": "Fountain Pump",
+        "Amount": 10.0,
+        "MappedCategory": "Cost of Goods Sold > Cost of Goods Sold",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule role-first-cogs; Inventory amount matches Qty x PurchaseCost (1 x 10 = 10).",
+        "RuleID": "role-first-cogs",
+        "OriginalMappedCategory": "Cost of Goods Sold > Cost of Goods Sold",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1037",
+        "Date": "2026-07-09",
+        "Contact": "Sonnenschein Family Store",
+        "AccountCode": "80",
+        "AccountName": "Cost of Goods Sold > Cost of Goods Sold",
+        "Description": "Fountain Pump",
+        "Amount": 10.0,
+        "MappedCategory": "Cost of Goods Sold > Cost of Goods Sold",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule role-first-cogs; Inventory amount matches Qty x PurchaseCost (1 x 10 = 10).",
+        "RuleID": "role-first-cogs",
+        "OriginalMappedCategory": "Cost of Goods Sold > Cost of Goods Sold",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1037",
+        "Date": "2026-07-09",
+        "Contact": "Sonnenschein Family Store",
+        "AccountCode": "80",
+        "AccountName": "Cost of Goods Sold > Cost of Goods Sold",
+        "Description": "Rock Fountain",
+        "Amount": 125.0,
+        "MappedCategory": "Cost of Goods Sold > Cost of Goods Sold",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule role-first-cogs; Inventory amount matches Qty x PurchaseCost (1 x 125 = 125).",
+        "RuleID": "role-first-cogs",
+        "OriginalMappedCategory": "Cost of Goods Sold > Cost of Goods Sold",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1035",
+        "Date": "2026-07-09",
+        "Contact": "Mark Cho",
+        "AccountCode": "80",
+        "AccountName": "Cost of Goods Sold > Cost of Goods Sold",
+        "Description": "Rock Fountain",
+        "Amount": 125.0,
+        "MappedCategory": "Cost of Goods Sold > Cost of Goods Sold",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule role-first-cogs; Inventory amount matches Qty x PurchaseCost (1 x 125 = 125).",
+        "RuleID": "role-first-cogs",
+        "OriginalMappedCategory": "Cost of Goods Sold > Cost of Goods Sold",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Invoice",
+        "InvoiceNumber": "1035",
+        "Date": "2026-07-09",
+        "Contact": "Mark Cho",
+        "AccountCode": "80",
+        "AccountName": "Cost of Goods Sold > Cost of Goods Sold",
+        "Description": "Sprinkler Pipes",
+        "Amount": 10.0,
+        "MappedCategory": "Cost of Goods Sold > Cost of Goods Sold",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule role-first-cogs; Inventory amount matches Qty x PurchaseCost (4 x 2.5 = 10).",
+        "RuleID": "role-first-cogs",
+        "OriginalMappedCategory": "Cost of Goods Sold > Cost of Goods Sold",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Expense",
+        "InvoiceNumber": "79",
+        "Date": "2026-07-07",
+        "Contact": "Lee Advertising",
+        "AccountCode": "7",
+        "AccountName": "Expenses > Advertising",
+        "Description": "Expense involving Lee Advertising",
+        "Amount": 74.86,
+        "MappedCategory": "Expenses > Advertising",
+        "Confidence": 0.9,
+        "Reason": "The transaction involves an expense related to Lee Advertising, indicating a strong likelihood that it falls under the Advertising expense category.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Advertising",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Cash Expense",
+        "InvoiceNumber": "80",
+        "Date": "2026-06-30",
+        "Contact": "Squeaky Kleen Car Wash",
+        "AccountCode": "55",
+        "AccountName": "Expenses > Automobile",
+        "Description": "Cash Expense involving Squeaky Kleen Car Wash",
+        "Amount": 19.99,
+        "MappedCategory": "Expenses > Automobile",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule visible-car-wash; Cash Expense is a purchase-side transaction.",
+        "RuleID": "visible-car-wash",
+        "OriginalMappedCategory": "Expenses > Automobile",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Check",
+        "InvoiceNumber": "Debit",
+        "Date": "2026-07-07",
+        "Contact": "Squeaky Kleen Car Wash",
+        "AccountCode": "55",
+        "AccountName": "Expenses > Automobile",
+        "Description": "Document Debit",
+        "Amount": 19.99,
+        "MappedCategory": "Expenses > Automobile",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule visible-car-wash; Check is a purchase-side transaction.",
+        "RuleID": "visible-car-wash",
+        "OriginalMappedCategory": "Expenses > Automobile",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Credit Card Expense",
+        "InvoiceNumber": "82",
+        "Date": "2026-07-14",
+        "Contact": "Squeaky Kleen Car Wash",
+        "AccountCode": "55",
+        "AccountName": "Expenses > Automobile",
+        "Description": "Credit Card Expense involving Squeaky Kleen Car Wash",
+        "Amount": 19.99,
+        "MappedCategory": "Expenses > Automobile",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule visible-car-wash; Credit Card Expense is a purchase-side transaction.",
+        "RuleID": "visible-car-wash",
+        "OriginalMappedCategory": "Expenses > Automobile",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Credit Card Expense",
+        "InvoiceNumber": "83",
+        "Date": "2026-07-21",
+        "Contact": "Squeaky Kleen Car Wash",
+        "AccountCode": "55",
+        "AccountName": "Expenses > Automobile",
+        "Description": "Credit Card Expense involving Squeaky Kleen Car Wash",
+        "Amount": 19.99,
+        "MappedCategory": "Expenses > Automobile",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule visible-car-wash; Credit Card Expense is a purchase-side transaction.",
+        "RuleID": "visible-car-wash",
+        "OriginalMappedCategory": "Expenses > Automobile",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Credit Card Expense",
+        "InvoiceNumber": "84",
+        "Date": "2026-08-03",
+        "Contact": "",
+        "AccountCode": "55",
+        "AccountName": "Expenses > Automobile",
+        "Description": "Credit Card Expense involving an unspecified counterparty",
+        "Amount": 34.0,
+        "MappedCategory": "Unmapped",
+        "Confidence": 0.0,
+        "Reason": "Rejected model output: category 'Expenses > Unmapped' is not in the allowed taxonomy.",
+        "RuleID": "VALIDATION_INVALID_CATEGORY",
+        "OriginalMappedCategory": "Expenses > Automobile",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Check",
+        "InvoiceNumber": "4",
+        "Date": "2026-05-20",
+        "Contact": "Chin's Gas and Oil",
+        "AccountCode": "56",
+        "AccountName": "Expenses > Automobile > Fuel",
+        "Description": "Document 4",
+        "Amount": 54.55,
+        "MappedCategory": "Expenses > Automobile > Fuel",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule visible-fuel-supplier; Check is a purchase-side transaction.",
+        "RuleID": "visible-fuel-supplier",
+        "OriginalMappedCategory": "Expenses > Automobile > Fuel",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Check",
+        "InvoiceNumber": "5",
+        "Date": "2026-06-04",
+        "Contact": "Chin's Gas and Oil",
+        "AccountCode": "56",
+        "AccountName": "Expenses > Automobile > Fuel",
+        "Description": "Document 5",
+        "Amount": 62.01,
+        "MappedCategory": "Expenses > Automobile > Fuel",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule visible-fuel-supplier; Check is a purchase-side transaction.",
+        "RuleID": "visible-fuel-supplier",
+        "OriginalMappedCategory": "Expenses > Automobile > Fuel",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Expense",
+        "InvoiceNumber": "1",
+        "Date": "2026-06-24",
+        "Contact": "Chin's Gas and Oil",
+        "AccountCode": "56",
+        "AccountName": "Expenses > Automobile > Fuel",
+        "Description": "Document 1",
+        "Amount": 65.0,
+        "MappedCategory": "Expenses > Automobile > Fuel",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule visible-fuel-supplier; Expense is a purchase-side transaction.",
+        "RuleID": "visible-fuel-supplier",
+        "OriginalMappedCategory": "Expenses > Automobile > Fuel",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Cash Expense",
+        "InvoiceNumber": "88",
+        "Date": "2026-07-01",
+        "Contact": "Chin's Gas and Oil",
+        "AccountCode": "56",
+        "AccountName": "Expenses > Automobile > Fuel",
+        "Description": "Cash Expense involving Chin's Gas and Oil",
+        "Amount": 52.14,
+        "MappedCategory": "Expenses > Automobile > Fuel",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule visible-fuel-supplier; Cash Expense is a purchase-side transaction.",
+        "RuleID": "visible-fuel-supplier",
+        "OriginalMappedCategory": "Expenses > Automobile > Fuel",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Cash Expense",
+        "InvoiceNumber": "89",
+        "Date": "2026-07-08",
+        "Contact": "Chin's Gas and Oil",
+        "AccountCode": "56",
+        "AccountName": "Expenses > Automobile > Fuel",
+        "Description": "Cash Expense involving Chin's Gas and Oil",
+        "Amount": 63.15,
+        "MappedCategory": "Expenses > Automobile > Fuel",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule visible-fuel-supplier; Cash Expense is a purchase-side transaction.",
+        "RuleID": "visible-fuel-supplier",
+        "OriginalMappedCategory": "Expenses > Automobile > Fuel",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Expense",
+        "InvoiceNumber": "1",
+        "Date": "2026-07-09",
+        "Contact": "Chin's Gas and Oil",
+        "AccountCode": "56",
+        "AccountName": "Expenses > Automobile > Fuel",
+        "Description": "Document 1",
+        "Amount": 52.56,
+        "MappedCategory": "Expenses > Automobile > Fuel",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule visible-fuel-supplier; Expense is a purchase-side transaction.",
+        "RuleID": "visible-fuel-supplier",
+        "OriginalMappedCategory": "Expenses > Automobile > Fuel",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Expense",
+        "InvoiceNumber": "1",
+        "Date": "2026-07-07",
+        "Contact": "Ellis Equipment Rental",
+        "AccountCode": "29",
+        "AccountName": "Expenses > Equipment Rental",
+        "Description": "Equipment rental for 5 days",
+        "Amount": 112.0,
+        "MappedCategory": "Expenses > Equipment Rental",
+        "Confidence": 0.9,
+        "Reason": "The transaction is for equipment rental, which directly aligns with the Equipment Rental expense category.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Equipment Rental",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Bill",
+        "InvoiceNumber": "92",
+        "Date": "2026-07-02",
+        "Contact": "Brosnahan Insurance Agency",
+        "AccountCode": "11",
+        "AccountName": "Expenses > Insurance",
+        "Description": "Bill involving Brosnahan Insurance Agency",
+        "Amount": 241.23,
+        "MappedCategory": "Expenses > Insurance",
+        "Confidence": 0.8,
+        "Reason": "The transaction is a bill from an insurance agency, indicating it is likely related to insurance expenses.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Insurance",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Expense",
+        "InvoiceNumber": "15",
+        "Date": "2026-06-05",
+        "Contact": "Tania's Nursery",
+        "AccountCode": "58",
+        "AccountName": "Expenses > Job Expenses",
+        "Description": "Document 15",
+        "Amount": 108.09,
+        "MappedCategory": "Expenses > Job Expenses > Job Materials",
+        "Confidence": 0.7,
+        "Reason": "The transaction is an expense related to a nursery, suggesting it may involve job materials for landscaping services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Job Expenses",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Expense",
+        "InvoiceNumber": "108",
+        "Date": "2026-07-08",
+        "Contact": "Tania's Nursery",
+        "AccountCode": "58",
+        "AccountName": "Expenses > Job Expenses",
+        "Description": "Document 108",
+        "Amount": 46.98,
+        "MappedCategory": "Expenses > Job Expenses > Job Materials",
+        "Confidence": 0.7,
+        "Reason": "The transaction is a purchase related to materials from a nursery, suggesting it falls under job materials expenses.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Job Expenses",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Expense",
+        "InvoiceNumber": "1",
+        "Date": "2026-06-27",
+        "Contact": "Hicks Hardware",
+        "AccountCode": "64",
+        "AccountName": "Expenses > Job Expenses > Job Materials > Decks and Patios",
+        "Description": "Document 1",
+        "Amount": 88.09,
+        "MappedCategory": "Expenses > Job Expenses",
+        "Confidence": 0.7,
+        "Reason": "The transaction is an expense related to a purchase from Hicks Hardware, which suggests it may be associated with job-related expenses.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Job Expenses > Job Materials > Decks and Patios",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Bill",
+        "InvoiceNumber": "96",
+        "Date": "2026-07-06",
+        "Contact": "Norton Lumber and Building Materials",
+        "AccountCode": "64",
+        "AccountName": "Expenses > Job Expenses > Job Materials > Decks and Patios",
+        "Description": "Lumber",
+        "Amount": 103.55,
+        "MappedCategory": "Expenses > Job Expenses > Job Materials > Decks and Patios",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule visible-deck-material; Bill is a purchase-side transaction.",
+        "RuleID": "visible-deck-material",
+        "OriginalMappedCategory": "Expenses > Job Expenses > Job Materials > Decks and Patios",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Credit Card Expense",
+        "InvoiceNumber": "97",
+        "Date": "2026-07-15",
+        "Contact": "Hicks Hardware",
+        "AccountCode": "64",
+        "AccountName": "Expenses > Job Expenses > Job Materials > Decks and Patios",
+        "Description": "Credit Card Expense involving Hicks Hardware",
+        "Amount": 42.4,
+        "MappedCategory": "Expenses > Office Expenses",
+        "Confidence": 0.7,
+        "Reason": "The transaction is a credit card expense related to a purchase from Hicks Hardware, which is likely to fall under office expenses.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Job Expenses > Job Materials > Decks and Patios",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Expense",
+        "InvoiceNumber": "3",
+        "Date": "2026-05-05",
+        "Contact": "Tania's Nursery",
+        "AccountCode": "66",
+        "AccountName": "Expenses > Job Expenses > Job Materials > Plants and Soil",
+        "Description": "Document 3",
+        "Amount": 158.08,
+        "MappedCategory": "Expenses > Job Expenses > Job Materials",
+        "Confidence": 0.7,
+        "Reason": "The transaction is an expense related to a nursery, suggesting it may involve job materials for landscaping services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Job Expenses > Job Materials > Plants and Soil",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Expense",
+        "InvoiceNumber": "9",
+        "Date": "2026-05-29",
+        "Contact": "Tania's Nursery",
+        "AccountCode": "66",
+        "AccountName": "Expenses > Job Expenses > Job Materials > Plants and Soil",
+        "Description": "Morning Glories and Sod",
+        "Amount": 89.09,
+        "MappedCategory": "Expenses > Job Expenses > Job Materials > Plants and Soil",
+        "Confidence": 0.8,
+        "Reason": "The transaction involves purchasing materials (Morning Glories and Sod) which aligns with job materials under landscaping services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Job Expenses > Job Materials > Plants and Soil",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Expense",
+        "InvoiceNumber": "50",
+        "Date": "2026-07-03",
+        "Contact": "Tania's Nursery",
+        "AccountCode": "66",
+        "AccountName": "Expenses > Job Expenses > Job Materials > Plants and Soil",
+        "Description": "Document 50",
+        "Amount": 82.45,
+        "MappedCategory": "Expenses > Job Expenses > Job Materials",
+        "Confidence": 0.7,
+        "Reason": "The transaction is a purchase from a nursery, likely for job materials, which aligns with the Job Materials category.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Job Expenses > Job Materials > Plants and Soil",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Cash Expense",
+        "InvoiceNumber": "101",
+        "Date": "2026-07-12",
+        "Contact": "Tania's Nursery",
+        "AccountCode": "66",
+        "AccountName": "Expenses > Job Expenses > Job Materials > Plants and Soil",
+        "Description": "Cash Expense involving Tania's Nursery",
+        "Amount": 23.5,
+        "MappedCategory": "Expenses > Job Expenses > Job Materials",
+        "Confidence": 0.6,
+        "Reason": "The transaction involves a purchase from a nursery, suggesting it relates to job materials, but lacks specific evidence to confirm the exact category.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Job Expenses > Job Materials > Plants and Soil",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Expense",
+        "InvoiceNumber": "13",
+        "Date": "2026-07-03",
+        "Contact": "Hicks Hardware",
+        "AccountCode": "67",
+        "AccountName": "Expenses > Job Expenses > Job Materials > Sprinklers and Drip Systems",
+        "Description": "Document 13",
+        "Amount": 215.66,
+        "MappedCategory": "Expenses > Job Expenses",
+        "Confidence": 0.7,
+        "Reason": "The transaction is an expense related to a purchase from a hardware store, likely for job-related materials or supplies.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Job Expenses > Job Materials > Sprinklers and Drip Systems",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Expense",
+        "InvoiceNumber": "76",
+        "Date": "2026-07-09",
+        "Contact": "Pam Seitz",
+        "AccountCode": "12",
+        "AccountName": "Expenses > Legal & Professional Fees",
+        "Description": "Counsel",
+        "Amount": 75.0,
+        "MappedCategory": "Expenses > Legal & Professional Fees",
+        "Confidence": 0.8,
+        "Reason": "The transaction is for 'Counsel', which aligns with legal services, fitting under Legal & Professional Fees.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Legal & Professional Fees",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Expense",
+        "InvoiceNumber": "12",
+        "Date": "2026-04-28",
+        "Contact": "Robertson & Associates",
+        "AccountCode": "69",
+        "AccountName": "Expenses > Legal & Professional Fees > Accounting",
+        "Description": "Document 12",
+        "Amount": 250.0,
+        "MappedCategory": "Expenses > Legal & Professional Fees",
+        "Confidence": 0.7,
+        "Reason": "The transaction is an expense related to a service provider, which aligns with legal and professional fees.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Legal & Professional Fees > Accounting",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Bill",
+        "InvoiceNumber": "105",
+        "Date": "2026-06-25",
+        "Contact": "Books by Bessie",
+        "AccountCode": "69",
+        "AccountName": "Expenses > Legal & Professional Fees > Accounting",
+        "Description": "Bill involving Books by Bessie",
+        "Amount": 75.0,
+        "MappedCategory": "Expenses > Legal & Professional Fees",
+        "Confidence": 0.7,
+        "Reason": "The transaction is a bill from a service provider, which typically falls under legal and professional fees.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Legal & Professional Fees > Accounting",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Bill",
+        "InvoiceNumber": "106",
+        "Date": "2026-07-09",
+        "Contact": "Robertson & Associates",
+        "AccountCode": "69",
+        "AccountName": "Expenses > Legal & Professional Fees > Accounting",
+        "Description": "Bill involving Robertson & Associates",
+        "Amount": 315.0,
+        "MappedCategory": "Expenses > Legal & Professional Fees",
+        "Confidence": 0.7,
+        "Reason": "The transaction is a bill from a professional service provider, suggesting it relates to legal or professional fees.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Legal & Professional Fees > Accounting",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Check",
+        "InvoiceNumber": "12",
+        "Date": "2026-05-29",
+        "Contact": "Books by Bessie",
+        "AccountCode": "70",
+        "AccountName": "Expenses > Legal & Professional Fees > Bookkeeper",
+        "Description": "Document 12",
+        "Amount": 55.0,
+        "MappedCategory": "Expenses > Job Expenses",
+        "Confidence": 0.7,
+        "Reason": "The transaction is a purchase related to a service, which aligns with job expenses, but lacks specific details to pinpoint a more precise category.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Legal & Professional Fees > Bookkeeper",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Bill",
+        "InvoiceNumber": "108",
+        "Date": "2026-03-07",
+        "Contact": "Robertson & Associates",
+        "AccountCode": "71",
+        "AccountName": "Expenses > Legal & Professional Fees > Lawyer",
+        "Description": "Bill involving Robertson & Associates",
+        "Amount": 300.0,
+        "MappedCategory": "Expenses > Legal & Professional Fees",
+        "Confidence": 0.7,
+        "Reason": "The transaction is a bill from a professional service provider, suggesting it relates to legal or professional fees.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Legal & Professional Fees > Lawyer",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Check",
+        "InvoiceNumber": "109",
+        "Date": "2026-06-30",
+        "Contact": "Tony Rondonuwu",
+        "AccountCode": "71",
+        "AccountName": "Expenses > Legal & Professional Fees > Lawyer",
+        "Description": "Consulting",
+        "Amount": 100.0,
+        "MappedCategory": "Expenses > Legal & Professional Fees",
+        "Confidence": 0.7,
+        "Reason": "The transaction is for consulting services, which typically falls under legal and professional fees.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Legal & Professional Fees > Lawyer",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Check",
+        "InvoiceNumber": "70",
+        "Date": "2026-07-01",
+        "Contact": "Chin's Gas and Oil",
+        "AccountCode": "72",
+        "AccountName": "Expenses > Maintenance and Repair",
+        "Description": "Document 70",
+        "Amount": 185.0,
+        "MappedCategory": "Expenses > Utilities > Gas and Electric",
+        "Confidence": 0.8,
+        "Reason": "The transaction is a purchase from a gas and oil company, suggesting it relates to utility expenses, specifically gas.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Maintenance and Repair",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Bill",
+        "InvoiceNumber": "111",
+        "Date": "2026-07-07",
+        "Contact": "Diego's Road Warrior Bodyshop",
+        "AccountCode": "75",
+        "AccountName": "Expenses > Maintenance and Repair > Equipment Repairs",
+        "Description": "Repairs on the truck",
+        "Amount": 755.0,
+        "MappedCategory": "Expenses > Maintenance and Repair > Equipment Repairs",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule visible-equipment-repair; Bill is a purchase-side transaction.",
+        "RuleID": "visible-equipment-repair",
+        "OriginalMappedCategory": "Expenses > Maintenance and Repair > Equipment Repairs",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Cash Expense",
+        "InvoiceNumber": "112",
+        "Date": "2026-06-30",
+        "Contact": "Bob's Burger Joint",
+        "AccountCode": "13",
+        "AccountName": "Expenses > Meals and Entertainment",
+        "Description": "Cash Expense involving Bob's Burger Joint",
+        "Amount": 5.66,
+        "MappedCategory": "Expenses > Meals and Entertainment",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule visible-meals-vendor; Cash Expense is a purchase-side transaction.",
+        "RuleID": "visible-meals-vendor",
+        "OriginalMappedCategory": "Expenses > Meals and Entertainment",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Cash Expense",
+        "InvoiceNumber": "113",
+        "Date": "2026-07-05",
+        "Contact": "Bob's Burger Joint",
+        "AccountCode": "13",
+        "AccountName": "Expenses > Meals and Entertainment",
+        "Description": "Cash Expense involving Bob's Burger Joint",
+        "Amount": 3.86,
+        "MappedCategory": "Expenses > Meals and Entertainment",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule visible-meals-vendor; Cash Expense is a purchase-side transaction.",
+        "RuleID": "visible-meals-vendor",
+        "OriginalMappedCategory": "Expenses > Meals and Entertainment",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Credit Card Expense",
+        "InvoiceNumber": "114",
+        "Date": "2026-07-14",
+        "Contact": "Bob's Burger Joint",
+        "AccountCode": "13",
+        "AccountName": "Expenses > Meals and Entertainment",
+        "Description": "Credit Card Expense involving Bob's Burger Joint",
+        "Amount": 18.97,
+        "MappedCategory": "Expenses > Meals and Entertainment",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule visible-meals-vendor; Credit Card Expense is a purchase-side transaction.",
+        "RuleID": "visible-meals-vendor",
+        "OriginalMappedCategory": "Expenses > Meals and Entertainment",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Check",
+        "InvoiceNumber": "2",
+        "Date": "2026-07-03",
+        "Contact": "Mahoney Mugs",
+        "AccountCode": "15",
+        "AccountName": "Expenses > Office Expenses",
+        "Description": "Office Supplies",
+        "Amount": 18.08,
+        "MappedCategory": "Expenses > Office Expenses",
+        "Confidence": 0.8,
+        "Reason": "The transaction is for office supplies, which aligns with the Office Expenses category.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Office Expenses",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Bill",
+        "InvoiceNumber": "116",
+        "Date": "2026-06-23",
+        "Contact": "Hall Properties",
+        "AccountCode": "17",
+        "AccountName": "Expenses > Rent or Lease",
+        "Description": "Building Lease",
+        "Amount": 900.0,
+        "MappedCategory": "Expenses > Rent or Lease",
+        "Confidence": 0.8,
+        "Reason": "The transaction is for a building lease, which aligns with the Rent or Lease expense category.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Rent or Lease",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Bill",
+        "InvoiceNumber": "117",
+        "Date": "2026-05-25",
+        "Contact": "PG&E",
+        "AccountCode": "76",
+        "AccountName": "Expenses > Utilities > Gas and Electric",
+        "Description": "Bill involving PG&E",
+        "Amount": 86.44,
+        "MappedCategory": "Expenses > Utilities > Gas and Electric",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule visible-electric-utility; Bill is a purchase-side transaction.",
+        "RuleID": "visible-electric-utility",
+        "OriginalMappedCategory": "Expenses > Utilities > Gas and Electric",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Bill",
+        "InvoiceNumber": "118",
+        "Date": "2026-06-23",
+        "Contact": "PG&E",
+        "AccountCode": "76",
+        "AccountName": "Expenses > Utilities > Gas and Electric",
+        "Description": "Bill involving PG&E",
+        "Amount": 114.09,
+        "MappedCategory": "Expenses > Utilities > Gas and Electric",
+        "Confidence": 0.99,
+        "Reason": "Visible-evidence rule visible-electric-utility; Bill is a purchase-side transaction.",
+        "RuleID": "visible-electric-utility",
+        "OriginalMappedCategory": "Expenses > Utilities > Gas and Electric",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Bill",
+        "InvoiceNumber": "119",
+        "Date": "2026-05-24",
+        "Contact": "Cal Telephone",
+        "AccountCode": "77",
+        "AccountName": "Expenses > Utilities > Telephone",
+        "Description": "Bill involving Cal Telephone",
+        "Amount": 56.5,
+        "MappedCategory": "Expenses > Utilities > Telephone",
+        "Confidence": 0.9,
+        "Reason": "The transaction is a bill from Cal Telephone, indicating it is likely related to utility expenses specifically for telephone services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Utilities > Telephone",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Bill",
+        "InvoiceNumber": "120",
+        "Date": "2026-06-23",
+        "Contact": "Cal Telephone",
+        "AccountCode": "77",
+        "AccountName": "Expenses > Utilities > Telephone",
+        "Description": "Monthly Phone Bill",
+        "Amount": 74.36,
+        "MappedCategory": "Expenses > Utilities > Telephone",
+        "Confidence": 0.9,
+        "Reason": "The transaction is a monthly phone bill, which directly relates to utility expenses for telephone services.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Expenses > Utilities > Telephone",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Bill",
+        "InvoiceNumber": "121",
+        "Date": "2026-06-02",
+        "Contact": "Hicks Hardware",
+        "AccountCode": "14",
+        "AccountName": "Other Expenses > Miscellaneous",
+        "Description": "Bill involving Hicks Hardware",
+        "Amount": 250.0,
+        "MappedCategory": "Expenses > Job Expenses",
+        "Confidence": 0.7,
+        "Reason": "The transaction is a bill from Hicks Hardware, likely for materials or supplies related to job expenses, but lacks specific detail to pinpoint a more precise account.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Other Expenses > Miscellaneous",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Bill",
+        "InvoiceNumber": "122",
+        "Date": "2026-06-24",
+        "Contact": "Tim Philip Masonry",
+        "AccountCode": "14",
+        "AccountName": "Other Expenses > Miscellaneous",
+        "Description": "Bill involving Tim Philip Masonry",
+        "Amount": 666.0,
+        "MappedCategory": "Expenses > Job Expenses",
+        "Confidence": 0.7,
+        "Reason": "The transaction is a bill related to a service provided by a masonry contractor, which typically falls under job-related expenses.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Other Expenses > Miscellaneous",
+        "NormalizationRule": null
+      },
+      {
+        "Type": "Bill",
+        "InvoiceNumber": "123",
+        "Date": "2026-07-02",
+        "Contact": "Brosnahan Insurance Agency",
+        "AccountCode": "14",
+        "AccountName": "Other Expenses > Miscellaneous",
+        "Description": "Bill involving Brosnahan Insurance Agency",
+        "Amount": 2000.0,
+        "MappedCategory": "Expenses > Insurance",
+        "Confidence": 0.9,
+        "Reason": "The transaction is a bill from an insurance agency, indicating it is likely related to insurance expenses.",
+        "RuleID": null,
+        "OriginalMappedCategory": "Other Expenses > Miscellaneous",
+        "NormalizationRule": null
+      }
+    ],
+    "balance_sheet_data": [],
+    "balance_sheet_summary": [],
+    "income_categories": [
+      "Income > Design income",
+      "Income > Discounts given",
+      "Income > Landscaping Services",
+      "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+      "Income > Landscaping Services > Job Materials > Plants and Soil",
+      "Income > Landscaping Services > Job Materials > Sprinklers and Drip Systems",
+      "Income > Landscaping Services > Labor > Installation",
+      "Income > Landscaping Services > Labor > Maintenance and Repair",
+      "Income > Pest Control Services",
+      "Income > Sales of Product Income",
+      "Income > Services"
+    ],
+    "allowed_categories": [
+      "Cost of Goods Sold > Cost of Goods Sold",
+      "Expenses > Advertising",
+      "Expenses > Automobile",
+      "Expenses > Automobile > Fuel",
+      "Expenses > Equipment Rental",
+      "Expenses > Insurance",
+      "Expenses > Job Expenses",
+      "Expenses > Job Expenses > Job Materials",
+      "Expenses > Job Expenses > Job Materials > Decks and Patios",
+      "Expenses > Job Expenses > Job Materials > Plants and Soil",
+      "Expenses > Legal & Professional Fees",
+      "Expenses > Maintenance and Repair > Equipment Repairs",
+      "Expenses > Meals and Entertainment",
+      "Expenses > Office Expenses",
+      "Expenses > Rent or Lease",
+      "Expenses > Utilities > Gas and Electric",
+      "Expenses > Utilities > Telephone",
+      "Income > Design income",
+      "Income > Discounts given",
+      "Income > Landscaping Services",
+      "Income > Landscaping Services > Job Materials > Fountains and Garden Lighting",
+      "Income > Landscaping Services > Job Materials > Plants and Soil",
+      "Income > Landscaping Services > Job Materials > Sprinklers and Drip Systems",
+      "Income > Landscaping Services > Labor > Installation",
+      "Income > Landscaping Services > Labor > Maintenance and Repair",
+      "Income > Pest Control Services",
+      "Income > Sales of Product Income",
+      "Income > Services",
+      "Unmapped"
+    ],
+    "review_threshold": 0.7
+  },
+  "balanceSheet": {
+    "openingDate": "2025-12-31",
+    "reportFrom": "2026-01-01",
+    "reportTo": "2026-08-25",
+    "accounts": [
+      {
+        "key": "2",
+        "section": "Equity",
+        "category": "Equity > Retained Earnings",
+        "name": "Retained Earnings",
+        "opening": 0.0
+      },
+      {
+        "key": "33",
+        "section": "Liabilities",
+        "category": "Liabilities > Current Liabilities > Accounts Payable > Accounts Payable (A/P)",
+        "name": "Accounts Payable (A/P)",
+        "opening": 0.0
+      },
+      {
+        "key": "34",
+        "section": "Equity",
+        "category": "Equity > Opening Balance Equity",
+        "name": "Opening Balance Equity",
+        "opening": 0.0
+      },
+      {
+        "key": "35",
+        "section": "Assets",
+        "category": "Assets > Current Assets > Bank Accounts > Checking",
+        "name": "Checking",
+        "opening": 0.0
+      },
+      {
+        "key": "36",
+        "section": "Assets",
+        "category": "Assets > Current Assets > Bank Accounts > Savings",
+        "name": "Savings",
+        "opening": 0.0
+      },
+      {
+        "key": "37",
+        "section": "Assets",
+        "category": "Assets > Fixed Assets > Truck",
+        "name": "Truck",
+        "opening": 0.0
+      },
+      {
+        "key": "38",
+        "section": "Assets",
+        "category": "Assets > Fixed Assets > Truck > Original Cost",
+        "name": "Truck:Original Cost",
+        "opening": 0.0
+      },
+      {
+        "key": "4",
+        "section": "Assets",
+        "category": "Assets > Current Assets > Other Current Assets > Undeposited Funds",
+        "name": "Undeposited Funds",
+        "opening": 0.0
+      },
+      {
+        "key": "41",
+        "section": "Liabilities",
+        "category": "Liabilities > Current Liabilities > Credit Cards > Mastercard",
+        "name": "Mastercard",
+        "opening": 0.0
+      },
+      {
+        "key": "43",
+        "section": "Liabilities",
+        "category": "Liabilities > Current Liabilities > Other Current Liabilities > Loan Payable",
+        "name": "Loan Payable",
+        "opening": 0.0
+      },
+      {
+        "key": "44",
+        "section": "Liabilities",
+        "category": "Liabilities > Long-Term Liabilities > Notes Payable",
+        "name": "Notes Payable",
+        "opening": 0.0
+      },
+      {
+        "key": "81",
+        "section": "Assets",
+        "category": "Assets > Current Assets > Other Current Assets > Inventory Asset",
+        "name": "Inventory Asset",
+        "opening": 0.0
+      },
+      {
+        "key": "84",
+        "section": "Assets",
+        "category": "Assets > Current Assets > Accounts Receivable > Accounts Receivable (A/R)",
+        "name": "Accounts Receivable (A/R)",
+        "opening": 0.0
+      },
+      {
+        "key": "89",
+        "section": "Liabilities",
+        "category": "Liabilities > Current Liabilities > Other Current Liabilities > Arizona Dept. of Revenue Payable",
+        "name": "Arizona Dept. of Revenue Payable",
+        "opening": 0.0
+      },
+      {
+        "key": "90",
+        "section": "Liabilities",
+        "category": "Liabilities > Current Liabilities > Other Current Liabilities > Board of Equalization Payable",
+        "name": "Board of Equalization Payable",
+        "opening": 0.0
+      },
+      {
+        "key": "__quickbooks_net_income__",
+        "section": "Equity",
+        "category": "Equity > Net Income",
+        "name": "Net Income",
+        "opening": 0.0
+      }
+    ],
+    "movements": [
+      {
+        "date": "2026-02-23",
+        "key": "35",
+        "amount": 5000.0
+      },
+      {
+        "date": "2026-02-23",
+        "key": "34",
+        "amount": 5000.0
+      },
+      {
+        "date": "2026-03-07",
+        "key": "33",
+        "amount": 300.0
+      },
+      {
+        "date": "2026-03-07",
+        "key": "__quickbooks_net_income__",
+        "amount": -300.0
+      },
+      {
+        "date": "2026-03-24",
+        "key": "84",
+        "amount": 175.0
+      },
+      {
+        "date": "2026-03-24",
+        "key": "84",
+        "amount": 226.75
+      },
+      {
+        "date": "2026-03-24",
+        "key": "90",
+        "amount": 10.5
+      },
+      {
+        "date": "2026-03-24",
+        "key": "__quickbooks_net_income__",
+        "amount": 50.0
+      },
+      {
+        "date": "2026-03-24",
+        "key": "__quickbooks_net_income__",
+        "amount": 140.0
+      },
+      {
+        "date": "2026-03-24",
+        "key": "__quickbooks_net_income__",
+        "amount": 131.25
+      },
+      {
+        "date": "2026-03-24",
+        "key": "__quickbooks_net_income__",
+        "amount": 35.0
+      },
+      {
+        "date": "2026-03-24",
+        "key": "__quickbooks_net_income__",
+        "amount": 35.0
+      },
+      {
+        "date": "2026-04-06",
+        "key": "35",
+        "amount": -300.0
+      },
+      {
+        "date": "2026-04-06",
+        "key": "33",
+        "amount": -300.0
+      },
+      {
+        "date": "2026-04-14",
+        "key": "35",
+        "amount": 175.0
+      },
+      {
+        "date": "2026-04-14",
+        "key": "84",
+        "amount": -175.0
+      },
+      {
+        "date": "2026-04-14",
+        "key": "84",
+        "amount": -226.75
+      },
+      {
+        "date": "2026-04-14",
+        "key": "4",
+        "amount": 226.75
+      },
+      {
+        "date": "2026-04-24",
+        "key": "84",
+        "amount": 387.0
+      },
+      {
+        "date": "2026-04-24",
+        "key": "90",
+        "amount": 22.0
+      },
+      {
+        "date": "2026-04-24",
+        "key": "__quickbooks_net_income__",
+        "amount": 90.0
+      },
+      {
+        "date": "2026-04-24",
+        "key": "__quickbooks_net_income__",
+        "amount": 275.0
+      },
+      {
+        "date": "2026-04-28",
+        "key": "35",
+        "amount": -250.0
+      },
+      {
+        "date": "2026-04-28",
+        "key": "__quickbooks_net_income__",
+        "amount": -250.0
+      },
+      {
+        "date": "2026-05-01",
+        "key": "84",
+        "amount": 156.0
+      },
+      {
+        "date": "2026-05-01",
+        "key": "__quickbooks_net_income__",
+        "amount": 48.0
+      },
+      {
+        "date": "2026-05-01",
+        "key": "__quickbooks_net_income__",
+        "amount": 60.0
+      },
+      {
+        "date": "2026-05-01",
+        "key": "__quickbooks_net_income__",
+        "amount": 48.0
+      },
+      {
+        "date": "2026-05-05",
+        "key": "41",
+        "amount": 158.08
+      },
+      {
+        "date": "2026-05-05",
+        "key": "__quickbooks_net_income__",
+        "amount": -158.08
+      },
+      {
+        "date": "2026-05-20",
+        "key": "35",
+        "amount": -54.55
+      },
+      {
+        "date": "2026-05-20",
+        "key": "__quickbooks_net_income__",
+        "amount": -54.55
+      },
+      {
+        "date": "2026-05-21",
+        "key": "84",
+        "amount": 75.0
+      },
+      {
+        "date": "2026-05-21",
+        "key": "__quickbooks_net_income__",
+        "amount": 75.0
+      },
+      {
+        "date": "2026-05-22",
+        "key": "84",
+        "amount": 81.0
+      },
+      {
+        "date": "2026-05-22",
+        "key": "84",
+        "amount": 460.4
+      },
+      {
+        "date": "2026-05-22",
+        "key": "84",
+        "amount": 85.0
+      },
+      {
+        "date": "2026-05-22",
+        "key": "84",
+        "amount": 205.0
+      },
+      {
+        "date": "2026-05-22",
+        "key": "89",
+        "amount": 8.44
+      },
+      {
+        "date": "2026-05-22",
+        "key": "89",
+        "amount": 29.96
+      },
+      {
+        "date": "2026-05-22",
+        "key": "90",
+        "amount": 6.0
+      },
+      {
+        "date": "2026-05-22",
+        "key": "__quickbooks_net_income__",
+        "amount": 50.0
+      },
+      {
+        "date": "2026-05-22",
+        "key": "__quickbooks_net_income__",
+        "amount": 75.0
+      },
+      {
+        "date": "2026-05-22",
+        "key": "__quickbooks_net_income__",
+        "amount": 120.0
+      },
+      {
+        "date": "2026-05-22",
+        "key": "__quickbooks_net_income__",
+        "amount": 75.0
+      },
+      {
+        "date": "2026-05-22",
+        "key": "__quickbooks_net_income__",
+        "amount": 275.0
+      },
+      {
+        "date": "2026-05-22",
+        "key": "__quickbooks_net_income__",
+        "amount": 72.0
+      },
+      {
+        "date": "2026-05-22",
+        "key": "__quickbooks_net_income__",
+        "amount": 50.0
+      },
+      {
+        "date": "2026-05-22",
+        "key": "__quickbooks_net_income__",
+        "amount": 35.0
+      },
+      {
+        "date": "2026-05-22",
+        "key": "__quickbooks_net_income__",
+        "amount": 35.0
+      },
+      {
+        "date": "2026-05-24",
+        "key": "33",
+        "amount": 56.5
+      },
+      {
+        "date": "2026-05-24",
+        "key": "__quickbooks_net_income__",
+        "amount": -56.5
+      },
+      {
+        "date": "2026-05-25",
+        "key": "33",
+        "amount": 86.44
+      },
+      {
+        "date": "2026-05-25",
+        "key": "__quickbooks_net_income__",
+        "amount": -86.44
+      },
+      {
+        "date": "2026-05-26",
+        "key": "35",
+        "amount": -38.4
+      },
+      {
+        "date": "2026-05-26",
+        "key": "35",
+        "amount": -38.5
+      },
+      {
+        "date": "2026-05-26",
+        "key": "89",
+        "amount": -38.4
+      },
+      {
+        "date": "2026-05-26",
+        "key": "90",
+        "amount": -38.5
+      },
+      {
+        "date": "2026-05-29",
+        "key": "35",
+        "amount": -55.0
+      },
+      {
+        "date": "2026-05-29",
+        "key": "35",
+        "amount": -89.09
+      },
+      {
+        "date": "2026-05-29",
+        "key": "__quickbooks_net_income__",
+        "amount": -89.09
+      },
+      {
+        "date": "2026-05-29",
+        "key": "__quickbooks_net_income__",
+        "amount": -55.0
+      },
+      {
+        "date": "2026-05-31",
+        "key": "84",
+        "amount": 86.4
+      },
+      {
+        "date": "2026-05-31",
+        "key": "90",
+        "amount": 6.4
+      },
+      {
+        "date": "2026-05-31",
+        "key": "__quickbooks_net_income__",
+        "amount": 80.0
+      },
+      {
+        "date": "2026-06-02",
+        "key": "33",
+        "amount": 250.0
+      },
+      {
+        "date": "2026-06-02",
+        "key": "__quickbooks_net_income__",
+        "amount": -250.0
+      },
+      {
+        "date": "2026-06-04",
+        "key": "35",
+        "amount": -62.01
+      },
+      {
+        "date": "2026-06-04",
+        "key": "__quickbooks_net_income__",
+        "amount": -62.01
+      },
+      {
+        "date": "2026-06-05",
+        "key": "35",
+        "amount": -108.09
+      },
+      {
+        "date": "2026-06-05",
+        "key": "__quickbooks_net_income__",
+        "amount": -108.09
+      },
+      {
+        "date": "2026-06-12",
+        "key": "84",
+        "amount": -460.4
+      },
+      {
+        "date": "2026-06-12",
+        "key": "4",
+        "amount": 460.4
+      },
+      {
+        "date": "2026-06-14",
+        "key": "35",
+        "amount": 86.4
+      },
+      {
+        "date": "2026-06-14",
+        "key": "35",
+        "amount": 225.0
+      },
+      {
+        "date": "2026-06-14",
+        "key": "84",
+        "amount": 750.0
+      },
+      {
+        "date": "2026-06-14",
+        "key": "84",
+        "amount": -86.4
+      },
+      {
+        "date": "2026-06-14",
+        "key": "__quickbooks_net_income__",
+        "amount": 750.0
+      },
+      {
+        "date": "2026-06-14",
+        "key": "__quickbooks_net_income__",
+        "amount": 225.0
+      },
+      {
+        "date": "2026-06-16",
+        "key": "35",
+        "amount": 105.0
+      },
+      {
+        "date": "2026-06-16",
+        "key": "84",
+        "amount": -105.0
+      },
+      {
+        "date": "2026-06-17",
+        "key": "84",
+        "amount": 459.0
+      },
+      {
+        "date": "2026-06-17",
+        "key": "84",
+        "amount": 81.0
+      },
+      {
+        "date": "2026-06-17",
+        "key": "90",
+        "amount": 34.0
+      },
+      {
+        "date": "2026-06-17",
+        "key": "90",
+        "amount": 6.0
+      },
+      {
+        "date": "2026-06-17",
+        "key": "__quickbooks_net_income__",
+        "amount": 75.0
+      },
+      {
+        "date": "2026-06-17",
+        "key": "__quickbooks_net_income__",
+        "amount": 275.0
+      },
+      {
+        "date": "2026-06-17",
+        "key": "__quickbooks_net_income__",
+        "amount": 150.0
+      },
+      {
+        "date": "2026-06-18",
+        "key": "35",
+        "amount": -250.0
+      },
+      {
+        "date": "2026-06-18",
+        "key": "33",
+        "amount": -250.0
+      },
+      {
+        "date": "2026-06-21",
+        "key": "35",
+        "amount": -24.36
+      },
+      {
+        "date": "2026-06-21",
+        "key": "__quickbooks_net_income__",
+        "amount": -24.36
+      },
+      {
+        "date": "2026-06-22",
+        "key": "84",
+        "amount": -100.0
+      },
+      {
+        "date": "2026-06-22",
+        "key": "__quickbooks_net_income__",
+        "amount": -100.0
+      },
+      {
+        "date": "2026-06-23",
+        "key": "84",
+        "amount": 80.0
+      },
+      {
+        "date": "2026-06-23",
+        "key": "38",
+        "amount": 13495.0
+      },
+      {
+        "date": "2026-06-23",
+        "key": "33",
+        "amount": 114.09
+      },
+      {
+        "date": "2026-06-23",
+        "key": "33",
+        "amount": 74.36
+      },
+      {
+        "date": "2026-06-23",
+        "key": "33",
+        "amount": 900.0
+      },
+      {
+        "date": "2026-06-23",
+        "key": "34",
+        "amount": 13495.0
+      },
+      {
+        "date": "2026-06-23",
+        "key": "__quickbooks_net_income__",
+        "amount": 80.0
+      },
+      {
+        "date": "2026-06-23",
+        "key": "__quickbooks_net_income__",
+        "amount": -900.0
+      },
+      {
+        "date": "2026-06-23",
+        "key": "__quickbooks_net_income__",
+        "amount": -114.09
+      },
+      {
+        "date": "2026-06-23",
+        "key": "__quickbooks_net_income__",
+        "amount": -74.36
+      },
+      {
+        "date": "2026-06-24",
+        "key": "33",
+        "amount": 666.0
+      },
+      {
+        "date": "2026-06-24",
+        "key": "41",
+        "amount": 65.0
+      },
+      {
+        "date": "2026-06-24",
+        "key": "__quickbooks_net_income__",
+        "amount": -65.0
+      },
+      {
+        "date": "2026-06-24",
+        "key": "__quickbooks_net_income__",
+        "amount": -666.0
+      },
+      {
+        "date": "2026-06-25",
+        "key": "84",
+        "amount": 274.5
+      },
+      {
+        "date": "2026-06-25",
+        "key": "33",
+        "amount": 75.0
+      },
+      {
+        "date": "2026-06-25",
+        "key": "__quickbooks_net_income__",
+        "amount": -30.5
+      },
+      {
+        "date": "2026-06-25",
+        "key": "__quickbooks_net_income__",
+        "amount": 275.0
+      },
+      {
+        "date": "2026-06-25",
+        "key": "__quickbooks_net_income__",
+        "amount": 30.0
+      },
+      {
+        "date": "2026-06-25",
+        "key": "__quickbooks_net_income__",
+        "amount": -75.0
+      },
+      {
+        "date": "2026-06-27",
+        "key": "84",
+        "amount": 2369.52
+      },
+      {
+        "date": "2026-06-27",
+        "key": "84",
+        "amount": 81.0
+      },
+      {
+        "date": "2026-06-27",
+        "key": "41",
+        "amount": 88.09
+      },
+      {
+        "date": "2026-06-27",
+        "key": "90",
+        "amount": 6.0
+      },
+      {
+        "date": "2026-06-27",
+        "key": "90",
+        "amount": 175.52
+      },
+      {
+        "date": "2026-06-27",
+        "key": "__quickbooks_net_income__",
+        "amount": 75.0
+      },
+      {
+        "date": "2026-06-27",
+        "key": "__quickbooks_net_income__",
+        "amount": 1750.0
+      },
+      {
+        "date": "2026-06-27",
+        "key": "__quickbooks_net_income__",
+        "amount": 20.0
+      },
+      {
+        "date": "2026-06-27",
+        "key": "__quickbooks_net_income__",
+        "amount": 24.0
+      },
+      {
+        "date": "2026-06-27",
+        "key": "__quickbooks_net_income__",
+        "amount": 400.0
+      },
+      {
+        "date": "2026-06-27",
+        "key": "__quickbooks_net_income__",
+        "amount": -88.09
+      },
+      {
+        "date": "2026-06-29",
+        "key": "41",
+        "amount": 54.92
+      },
+      {
+        "date": "2026-06-29",
+        "key": "__quickbooks_net_income__",
+        "amount": -54.92
+      },
+      {
+        "date": "2026-06-30",
+        "key": "35",
+        "amount": -100.0
+      },
+      {
+        "date": "2026-06-30",
+        "key": "35",
+        "amount": -5.66
+      },
+      {
+        "date": "2026-06-30",
+        "key": "35",
+        "amount": -19.99
+      },
+      {
+        "date": "2026-06-30",
+        "key": "84",
+        "amount": 80.0
+      },
+      {
+        "date": "2026-06-30",
+        "key": "84",
+        "amount": 54.0
+      },
+      {
+        "date": "2026-06-30",
+        "key": "90",
+        "amount": 4.0
+      },
+      {
+        "date": "2026-06-30",
+        "key": "__quickbooks_net_income__",
+        "amount": 50.0
+      },
+      {
+        "date": "2026-06-30",
+        "key": "__quickbooks_net_income__",
+        "amount": 80.0
+      },
+      {
+        "date": "2026-06-30",
+        "key": "__quickbooks_net_income__",
+        "amount": -19.99
+      },
+      {
+        "date": "2026-06-30",
+        "key": "__quickbooks_net_income__",
+        "amount": -100.0
+      },
+      {
+        "date": "2026-06-30",
+        "key": "__quickbooks_net_income__",
+        "amount": -5.66
+      },
+      {
+        "date": "2026-07-01",
+        "key": "35",
+        "amount": -185.0
+      },
+      {
+        "date": "2026-07-01",
+        "key": "35",
+        "amount": -52.14
+      },
+      {
+        "date": "2026-07-01",
+        "key": "__quickbooks_net_income__",
+        "amount": -52.14
+      },
+      {
+        "date": "2026-07-01",
+        "key": "__quickbooks_net_income__",
+        "amount": -185.0
+      },
+      {
+        "date": "2026-07-02",
+        "key": "35",
+        "amount": 694.0
+      },
+      {
+        "date": "2026-07-02",
+        "key": "35",
+        "amount": -900.0
+      },
+      {
+        "date": "2026-07-02",
+        "key": "84",
+        "amount": -694.0
+      },
+      {
+        "date": "2026-07-02",
+        "key": "33",
+        "amount": 2000.0
+      },
+      {
+        "date": "2026-07-02",
+        "key": "33",
+        "amount": -900.0
+      },
+      {
+        "date": "2026-07-02",
+        "key": "33",
+        "amount": 241.23
+      },
+      {
+        "date": "2026-07-02",
+        "key": "__quickbooks_net_income__",
+        "amount": -241.23
+      },
+      {
+        "date": "2026-07-02",
+        "key": "__quickbooks_net_income__",
+        "amount": -2000.0
+      },
+      {
+        "date": "2026-07-03",
+        "key": "35",
+        "amount": -215.66
+      },
+      {
+        "date": "2026-07-03",
+        "key": "35",
+        "amount": -18.08
+      },
+      {
+        "date": "2026-07-03",
+        "key": "41",
+        "amount": 82.45
+      },
+      {
+        "date": "2026-07-03",
+        "key": "__quickbooks_net_income__",
+        "amount": -82.45
+      },
+      {
+        "date": "2026-07-03",
+        "key": "__quickbooks_net_income__",
+        "amount": -215.66
+      },
+      {
+        "date": "2026-07-03",
+        "key": "__quickbooks_net_income__",
+        "amount": -18.08
+      },
+      {
+        "date": "2026-07-04",
+        "key": "35",
+        "amount": 337.5
+      },
+      {
+        "date": "2026-07-04",
+        "key": "__quickbooks_net_income__",
+        "amount": 337.5
+      },
+      {
+        "date": "2026-07-05",
+        "key": "35",
+        "amount": -3.86
+      },
+      {
+        "date": "2026-07-05",
+        "key": "36",
+        "amount": 600.0
+      },
+      {
+        "date": "2026-07-05",
+        "key": "84",
+        "amount": -80.0
+      },
+      {
+        "date": "2026-07-05",
+        "key": "4",
+        "amount": 80.0
+      },
+      {
+        "date": "2026-07-05",
+        "key": "4",
+        "amount": 140.0
+      },
+      {
+        "date": "2026-07-05",
+        "key": "34",
+        "amount": 600.0
+      },
+      {
+        "date": "2026-07-05",
+        "key": "__quickbooks_net_income__",
+        "amount": 140.0
+      },
+      {
+        "date": "2026-07-05",
+        "key": "__quickbooks_net_income__",
+        "amount": -3.86
+      },
+      {
+        "date": "2026-07-06",
+        "key": "35",
+        "amount": -2000.0
+      },
+      {
+        "date": "2026-07-06",
+        "key": "84",
+        "amount": 108.0
+      },
+      {
+        "date": "2026-07-06",
+        "key": "84",
+        "amount": 103.55
+      },
+      {
+        "date": "2026-07-06",
+        "key": "84",
+        "amount": 414.72
+      },
+      {
+        "date": "2026-07-06",
+        "key": "33",
+        "amount": 103.55
+      },
+      {
+        "date": "2026-07-06",
+        "key": "33",
+        "amount": -2000.0
+      },
+      {
+        "date": "2026-07-06",
+        "key": "90",
+        "amount": 8.0
+      },
+      {
+        "date": "2026-07-06",
+        "key": "90",
+        "amount": 30.72
+      },
+      {
+        "date": "2026-07-06",
+        "key": "43",
+        "amount": 4000.0
+      },
+      {
+        "date": "2026-07-06",
+        "key": "44",
+        "amount": 25000.0
+      },
+      {
+        "date": "2026-07-06",
+        "key": "34",
+        "amount": -4000.0
+      },
+      {
+        "date": "2026-07-06",
+        "key": "34",
+        "amount": -25000.0
+      },
+      {
+        "date": "2026-07-06",
+        "key": "__quickbooks_net_income__",
+        "amount": 100.0
+      },
+      {
+        "date": "2026-07-06",
+        "key": "__quickbooks_net_income__",
+        "amount": 84.0
+      },
+      {
+        "date": "2026-07-06",
+        "key": "__quickbooks_net_income__",
+        "amount": 300.0
+      },
+      {
+        "date": "2026-07-06",
+        "key": "__quickbooks_net_income__",
+        "amount": 103.55
+      },
+      {
+        "date": "2026-07-06",
+        "key": "__quickbooks_net_income__",
+        "amount": -103.55
+      },
+      {
+        "date": "2026-07-07",
+        "key": "35",
+        "amount": 50.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "35",
+        "amount": -87.5
+      },
+      {
+        "date": "2026-07-07",
+        "key": "35",
+        "amount": 218.75
+      },
+      {
+        "date": "2026-07-07",
+        "key": "35",
+        "amount": 103.55
+      },
+      {
+        "date": "2026-07-07",
+        "key": "35",
+        "amount": -75.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "35",
+        "amount": -19.99
+      },
+      {
+        "date": "2026-07-07",
+        "key": "84",
+        "amount": -108.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "84",
+        "amount": 954.75
+      },
+      {
+        "date": "2026-07-07",
+        "key": "84",
+        "amount": -50.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "84",
+        "amount": -300.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "84",
+        "amount": -103.55
+      },
+      {
+        "date": "2026-07-07",
+        "key": "84",
+        "amount": 70.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "84",
+        "amount": 80.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "84",
+        "amount": 375.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "4",
+        "amount": -140.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "4",
+        "amount": 78.75
+      },
+      {
+        "date": "2026-07-07",
+        "key": "4",
+        "amount": 108.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "4",
+        "amount": 300.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "4",
+        "amount": -78.75
+      },
+      {
+        "date": "2026-07-07",
+        "key": "33",
+        "amount": -74.36
+      },
+      {
+        "date": "2026-07-07",
+        "key": "33",
+        "amount": 755.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "33",
+        "amount": -75.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "41",
+        "amount": 112.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "41",
+        "amount": 74.86
+      },
+      {
+        "date": "2026-07-07",
+        "key": "41",
+        "amount": 74.36
+      },
+      {
+        "date": "2026-07-07",
+        "key": "__quickbooks_net_income__",
+        "amount": 300.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "__quickbooks_net_income__",
+        "amount": 375.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "__quickbooks_net_income__",
+        "amount": -50.25
+      },
+      {
+        "date": "2026-07-07",
+        "key": "__quickbooks_net_income__",
+        "amount": -8.75
+      },
+      {
+        "date": "2026-07-07",
+        "key": "__quickbooks_net_income__",
+        "amount": 80.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "__quickbooks_net_income__",
+        "amount": 180.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "__quickbooks_net_income__",
+        "amount": 275.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "__quickbooks_net_income__",
+        "amount": 250.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "__quickbooks_net_income__",
+        "amount": 70.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "__quickbooks_net_income__",
+        "amount": -87.5
+      },
+      {
+        "date": "2026-07-07",
+        "key": "__quickbooks_net_income__",
+        "amount": 87.5
+      },
+      {
+        "date": "2026-07-07",
+        "key": "__quickbooks_net_income__",
+        "amount": -74.86
+      },
+      {
+        "date": "2026-07-07",
+        "key": "__quickbooks_net_income__",
+        "amount": -19.99
+      },
+      {
+        "date": "2026-07-07",
+        "key": "__quickbooks_net_income__",
+        "amount": -112.0
+      },
+      {
+        "date": "2026-07-07",
+        "key": "__quickbooks_net_income__",
+        "amount": -755.0
+      },
+      {
+        "date": "2026-07-08",
+        "key": "35",
+        "amount": -63.15
+      },
+      {
+        "date": "2026-07-08",
+        "key": "35",
+        "amount": -46.98
+      },
+      {
+        "date": "2026-07-08",
+        "key": "35",
+        "amount": -666.0
+      },
+      {
+        "date": "2026-07-08",
+        "key": "35",
+        "amount": -114.09
+      },
+      {
+        "date": "2026-07-08",
+        "key": "35",
+        "amount": 408.0
+      },
+      {
+        "date": "2026-07-08",
+        "key": "84",
+        "amount": 78.6
+      },
+      {
+        "date": "2026-07-08",
+        "key": "84",
+        "amount": 629.1
+      },
+      {
+        "date": "2026-07-08",
+        "key": "84",
+        "amount": -81.0
+      },
+      {
+        "date": "2026-07-08",
+        "key": "84",
+        "amount": -220.0
+      },
+      {
+        "date": "2026-07-08",
+        "key": "4",
+        "amount": -108.0
+      },
+      {
+        "date": "2026-07-08",
+        "key": "4",
+        "amount": -300.0
+      },
+      {
+        "date": "2026-07-08",
+        "key": "4",
+        "amount": 81.0
+      },
+      {
+        "date": "2026-07-08",
+        "key": "4",
+        "amount": 220.0
+      },
+      {
+        "date": "2026-07-08",
+        "key": "33",
+        "amount": -666.0
+      },
+      {
+        "date": "2026-07-08",
+        "key": "33",
+        "amount": -114.09
+      },
+      {
+        "date": "2026-07-08",
+        "key": "90",
+        "amount": 46.6
+      },
+      {
+        "date": "2026-07-08",
+        "key": "90",
+        "amount": 3.6
+      },
+      {
+        "date": "2026-07-08",
+        "key": "__quickbooks_net_income__",
+        "amount": 262.5
+      },
+      {
+        "date": "2026-07-08",
+        "key": "__quickbooks_net_income__",
+        "amount": 30.0
+      },
+      {
+        "date": "2026-07-08",
+        "key": "__quickbooks_net_income__",
+        "amount": 275.0
+      },
+      {
+        "date": "2026-07-08",
+        "key": "__quickbooks_net_income__",
+        "amount": 45.0
+      },
+      {
+        "date": "2026-07-08",
+        "key": "__quickbooks_net_income__",
+        "amount": 45.0
+      },
+      {
+        "date": "2026-07-08",
+        "key": "__quickbooks_net_income__",
+        "amount": -63.15
+      },
+      {
+        "date": "2026-07-08",
+        "key": "__quickbooks_net_income__",
+        "amount": -46.98
+      },
+      {
+        "date": "2026-07-09",
+        "key": "35",
+        "amount": -228.75
+      },
+      {
+        "date": "2026-07-09",
+        "key": "35",
+        "amount": 868.15
+      },
+      {
+        "date": "2026-07-09",
+        "key": "35",
+        "amount": -75.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "36",
+        "amount": 200.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "84",
+        "amount": -387.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "84",
+        "amount": 314.28
+      },
+      {
+        "date": "2026-07-09",
+        "key": "84",
+        "amount": 362.07
+      },
+      {
+        "date": "2026-07-09",
+        "key": "84",
+        "amount": 477.5
+      },
+      {
+        "date": "2026-07-09",
+        "key": "84",
+        "amount": -1675.52
+      },
+      {
+        "date": "2026-07-09",
+        "key": "81",
+        "amount": -10.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "81",
+        "amount": -10.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "81",
+        "amount": -125.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "81",
+        "amount": -125.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "81",
+        "amount": -10.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "81",
+        "amount": 30.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "81",
+        "amount": 62.5
+      },
+      {
+        "date": "2026-07-09",
+        "key": "81",
+        "amount": 11.25
+      },
+      {
+        "date": "2026-07-09",
+        "key": "81",
+        "amount": 125.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "81",
+        "amount": 160.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "81",
+        "amount": 25.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "81",
+        "amount": 375.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "81",
+        "amount": 7.5
+      },
+      {
+        "date": "2026-07-09",
+        "key": "81",
+        "amount": 125.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "81",
+        "amount": 80.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "81",
+        "amount": -125.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "4",
+        "amount": 387.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "4",
+        "amount": -80.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "4",
+        "amount": -460.4
+      },
+      {
+        "date": "2026-07-09",
+        "key": "4",
+        "amount": -226.75
+      },
+      {
+        "date": "2026-07-09",
+        "key": "4",
+        "amount": -81.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "4",
+        "amount": -220.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "4",
+        "amount": 1675.52
+      },
+      {
+        "date": "2026-07-09",
+        "key": "33",
+        "amount": -56.5
+      },
+      {
+        "date": "2026-07-09",
+        "key": "33",
+        "amount": 315.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "33",
+        "amount": 205.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "33",
+        "amount": -103.55
+      },
+      {
+        "date": "2026-07-09",
+        "key": "41",
+        "amount": 103.55
+      },
+      {
+        "date": "2026-07-09",
+        "key": "41",
+        "amount": 52.56
+      },
+      {
+        "date": "2026-07-09",
+        "key": "41",
+        "amount": 56.5
+      },
+      {
+        "date": "2026-07-09",
+        "key": "90",
+        "amount": 26.82
+      },
+      {
+        "date": "2026-07-09",
+        "key": "90",
+        "amount": 23.28
+      },
+      {
+        "date": "2026-07-09",
+        "key": "34",
+        "amount": 160.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "34",
+        "amount": 25.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "34",
+        "amount": 7.5
+      },
+      {
+        "date": "2026-07-09",
+        "key": "34",
+        "amount": 375.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": 87.5
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": 47.5
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": 50.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": 50.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": 16.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": 275.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": 15.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": 275.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": 275.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": 12.75
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": -10.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": -125.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": -10.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": -10.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": -125.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": -125.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": -52.56
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": -75.0
+      },
+      {
+        "date": "2026-07-09",
+        "key": "__quickbooks_net_income__",
+        "amount": -315.0
+      },
+      {
+        "date": "2026-07-12",
+        "key": "35",
+        "amount": -23.5
+      },
+      {
+        "date": "2026-07-12",
+        "key": "__quickbooks_net_income__",
+        "amount": -23.5
+      },
+      {
+        "date": "2026-07-14",
+        "key": "41",
+        "amount": 18.97
+      },
+      {
+        "date": "2026-07-14",
+        "key": "41",
+        "amount": 19.99
+      },
+      {
+        "date": "2026-07-14",
+        "key": "__quickbooks_net_income__",
+        "amount": -19.99
+      },
+      {
+        "date": "2026-07-14",
+        "key": "__quickbooks_net_income__",
+        "amount": -18.97
+      },
+      {
+        "date": "2026-07-15",
+        "key": "41",
+        "amount": 42.4
+      },
+      {
+        "date": "2026-07-15",
+        "key": "__quickbooks_net_income__",
+        "amount": -42.4
+      },
+      {
+        "date": "2026-07-21",
+        "key": "41",
+        "amount": 19.99
+      },
+      {
+        "date": "2026-07-21",
+        "key": "__quickbooks_net_income__",
+        "amount": -19.99
+      },
+      {
+        "date": "2026-07-23",
+        "key": "35",
+        "amount": -900.0
+      },
+      {
+        "date": "2026-07-23",
+        "key": "41",
+        "amount": -900.0
+      },
+      {
+        "date": "2026-08-03",
+        "key": "41",
+        "amount": 34.0
+      },
+      {
+        "date": "2026-08-03",
+        "key": "__quickbooks_net_income__",
+        "amount": -34.0
+      }
+    ],
+    "aging": {
+      "asAt": "2026-08-25",
+      "receivables": [
+        3840.02,
+        1044.5,
+        397.0,
+        0.0
+      ],
+      "payables": [
+        755.0,
+        761.23,
+        86.44,
+        0.0
+      ]
+    }
+  }
+}

@@ -12,6 +12,8 @@ export interface BSSection {
 
 export interface BalanceSheetData {
   company: string
+  currency?: string
+  source?: string
   asAt: string
   priorPeriod: string
   assets: {
@@ -31,6 +33,8 @@ export interface BalanceSheetData {
 
 export const BALANCE_SHEET_DATA: BalanceSheetData = {
   company: 'Demo Company (AU)',
+  currency: 'AUD',
+  source: 'Xero',
   asAt: '31 Dec 2025',
   priorPeriod: '31 Dec 2024',
   assets: {

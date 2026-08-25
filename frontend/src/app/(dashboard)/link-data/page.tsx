@@ -20,6 +20,7 @@ import {
   type DataSource,
 } from '@/lib/link-data'
 import { cn } from '@/lib/utils'
+import { setStoredDataSource } from '@/lib/report-source'
 
 type LinkPhase = 'idle' | 'loading' | 'success'
 
@@ -71,6 +72,7 @@ export default function LinkDataPage() {
     if (redirectRef.current) clearTimeout(redirectRef.current)
 
     const nextSteps = CONNECTION_STEPS[nextSource]
+    setStoredDataSource(nextSource)
     setSource(nextSource)
     setCompletedSteps(0)
     setPhase('loading')

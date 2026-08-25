@@ -7,19 +7,15 @@ import { FilterPanel } from '@/components/report/FilterPanel'
 import { MetricCards } from '@/components/report/MetricCards'
 import { ChartsSection } from '@/components/report/ChartsSection'
 import { DataTables } from '@/components/report/DataTables'
+import { DataSourceSelect } from '@/components/DataSourceSelect'
+import { QUICKBOOKS_DATA, QUICKBOOKS_REPORT_DATA } from '@/lib/quickbooks-report-data'
+import { useReportSource } from '@/lib/report-source'
+import type { ReportData } from '@/lib/report-data'
 
-const ALL_TYPES = Array.from(new Set(REPORT_DATA.raw_data.map((r) => r.Type))).sort()
-const ALL_ACCOUNTS = Array.from(new Set(REPORT_DATA.raw_data.map((r) => r.AccountName))).sort()
-
-const DATE_RANGE = REPORT_DATA.raw_data.reduce(
-  (acc, r) => ({ min: r.Date < acc.min ? r.Date : acc.min, max: r.Date > acc.max ? r.Date : acc.max }),
-  { min: '9999-12-31', max: '0000-01-01' },
-)
-
-function defaultFilters(): FilterState {
+function defaultFilters(data: ReportData): FilterState {
   return {
-    startDate:'2025-01-01',
-    endDate: DATE_RANGE.max,
+    startDate: data.meta.report_from,
+    endDate: data.meta.report_to,
     search: '',
     topN: 8,
     selectedTypes: new Set(),
@@ -30,23 +26,44 @@ function defaultFilters(): FilterState {
 }
 
 export default function ProfitLossPage() {
-  const [filters, setFilters] = useState<FilterState>(defaultFilters)
-  const filteredRows = useMemo(() => getFilteredRows(REPORT_DATA.raw_data, filters), [filters])
+  const [source, setSource] = useReportSource()
+  const reportData = source === 'quickbooks' ? QUICKBOOKS_REPORT_DATA : REPORT_DATA
+  const [filtersBySource, setFiltersBySource] = useState<Record<typeof source, FilterState>>(() => ({
+    xero: defaultFilters(REPORT_DATA),
+    quickbooks: defaultFilters(QUICKBOOKS_REPORT_DATA),
+  }))
+  const filters = filtersBySource[source]
+  const setFilters = (nextFilters: FilterState) => {
+    setFiltersBySource((current) => ({ ...current, [source]: nextFilters }))
+  }
+  const allTypes = useMemo(() => Array.from(new Set(reportData.raw_data.map((row) => row.Type))).sort(), [reportData])
+  const allAccounts = useMemo(() => Array.from(new Set(reportData.raw_data.map((row) => row.AccountName))).sort(), [reportData])
+  const filteredRows = useMemo(() => getFilteredRows(reportData.raw_data, filters), [reportData, filters])
   const metrics = useMemo(() => computeMetrics(filteredRows), [filteredRows])
+
+  function changeSource(nextSource: typeof source) {
+    setSource(nextSource)
+  }
+
+  const company = source === 'quickbooks' ? QUICKBOOKS_DATA.source.company : 'Demo Company (AU)'
+  const currency = source === 'quickbooks' ? QUICKBOOKS_DATA.source.currency : 'AUD'
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">Profit and Loss Report</h1>
-        <p className="text-sm text-muted-foreground">
-          Generated from Xero P&amp;L and transaction mapping {REPORT_DATA.meta.report_from} to {REPORT_DATA.meta.report_to}
-        </p>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">Profit and Loss Report</h1>
+          <p className="text-sm text-muted-foreground">
+            {company} — {source === 'quickbooks' ? 'QuickBooks downloaded data' : 'Xero demo data'} — {reportData.meta.report_from} to {reportData.meta.report_to} ({currency})
+          </p>
+        </div>
+        <DataSourceSelect value={source} onChange={changeSource} />
       </div>
       <div className="flex flex-col gap-5">
-        <FilterPanel filters={filters} allTypes={ALL_TYPES} allAccounts={ALL_ACCOUNTS} onChange={setFilters} onReset={() => setFilters(defaultFilters())} />
+        <FilterPanel filters={filters} allTypes={allTypes} allAccounts={allAccounts} onChange={setFilters} onReset={() => setFilters(defaultFilters(reportData))} />
         <MetricCards metrics={metrics} />
-        <ChartsSection rows={filteredRows} topN={filters.topN} incomeCategories={REPORT_DATA.income_categories} />
-        <DataTables rows={filteredRows} reviewThreshold={REPORT_DATA.review_threshold} />
+        <ChartsSection rows={filteredRows} topN={filters.topN} incomeCategories={reportData.income_categories} />
+        <DataTables rows={filteredRows} reviewThreshold={reportData.review_threshold} />
       </div>
     </main>
   )
